@@ -94,8 +94,7 @@
             margin-bottom: 8px;
         }
 
-        .form-group input,
-        .form-group textarea {
+        .form-group input {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
@@ -104,20 +103,26 @@
             transition: border-color 0.3s ease;
         }
 
-        .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group input:focus {
             outline: none;
             border-color: #d4630a;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
         .writing-tools {
             display: flex;
             gap: 5px;
-            margin-bottom: 10px;
             padding: 8px;
             background: #f5f5f5;
             border-radius: 8px;
             border: 2px solid #e0e0e0;
+            margin-bottom: 10px;
         }
 
         .tool-btn {
@@ -134,16 +139,120 @@
             background: #e0e0e0;
         }
 
-        .tool-btn.active {
-            background: #d4630a;
+        .expand-btn {
+            background: #007bff;
             color: white;
-            border-color: #d4630a;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .expand-btn:hover {
+            background: #0056b3;
         }
 
         .story-editor {
-            min-height: 120px;
-            resize: vertical;
-            font-family: inherit;
+            min-height: 150px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .story-editor:focus {
+            outline: none;
+            border-color: #d4630a;
+        }
+
+        .story-editor:empty:before {
+            content: attr(data-placeholder);
+            color: #999;
+            font-style: italic;
+        }
+
+        .story-editor:focus:before {
+            content: '';
+        }
+
+        .fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .fullscreen-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen-editor {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 1000px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .fullscreen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .fullscreen-title {
+            font-size: 1.5em;
+            color: #8b4513;
+            font-weight: 600;
+        }
+
+        .close-fullscreen {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .close-fullscreen:hover {
+            background: #c82333;
+        }
+
+        #fullscreenContent {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 500px;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+
+        #fullscreenContent:focus {
+            outline: none;
+            border-color: #d4630a;
+        }
+
+        #fullscreenContent:empty:before {
+            content: "Write your story here...";
+            color: #999;
+            font-style: italic;
         }
 
         .photo-section {
@@ -203,9 +312,6 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .btn {
@@ -225,14 +331,9 @@
             background: #b85609;
         }
 
-        .btn:active {
-            transform: translateY(1px);
-        }
-
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
-            transform: none;
         }
 
         .friends-list {
@@ -344,6 +445,49 @@
             padding: 20px;
             margin-bottom: 20px;
             background: #fafafa;
+            position: relative;
+        }
+
+        .story-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .story-action-btn {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s ease;
+        }
+
+        .story-action-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .story-action-btn.edit {
+            color: #007bff;
+            border-color: #007bff;
+        }
+
+        .story-action-btn.edit:hover {
+            background: #007bff;
+            color: white;
+        }
+
+        .story-action-btn.delete {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .story-action-btn.delete:hover {
+            background: #dc3545;
+            color: white;
         }
 
         .story-title {
@@ -351,6 +495,7 @@
             margin-bottom: 10px;
             font-size: 1.2em;
             font-weight: 600;
+            padding-right: 100px;
         }
 
         .story-meta {
@@ -362,8 +507,19 @@
         .story-content {
             line-height: 1.6;
             color: #333;
-            white-space: pre-wrap;
             margin-bottom: 15px;
+        }
+
+        .story-content strong {
+            font-weight: bold;
+        }
+
+        .story-content em {
+            font-style: italic;
+        }
+
+        .story-content u {
+            text-decoration: underline;
         }
 
         .story-photos {
@@ -427,6 +583,15 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            .story-actions {
+                position: static;
+                margin-bottom: 15px;
+            }
+
+            .story-title {
+                padding-right: 0;
+            }
         }
     </style>
 </head>
@@ -434,7 +599,7 @@
     <div class="container">
         <div class="test-notice">
             <h4>🧪 Test Version</h4>
-            <p>This is a demo version of Acta Diurna. Data persists between sessions using your browser's local storage. Perfect for testing with friends!</p>
+            <p>This is a demo version of Acta Diurna. Data persists between sessions using your browser's local storage.</p>
         </div>
 
         <header class="header">
@@ -447,7 +612,6 @@
         </header>
 
         <div class="main-content">
-            <!-- Share Your Story Card -->
             <div class="card">
                 <h2 class="card-title">
                     <span>📝</span>
@@ -461,6 +625,7 @@
                             id="storyTitle" 
                             placeholder="What happened? Give your story a compelling title"
                             required
+                            tabindex="1"
                         >
                     </div>
                     
@@ -470,34 +635,35 @@
                             type="text" 
                             id="authorName" 
                             placeholder="Your name (optional - defaults to Anonymous)"
+                            tabindex="2"
                         >
                     </div>
                     
                     <div class="form-group">
-                        <label for="storyContent">Your Story *</label>
-                        <div class="writing-tools">
-                            <button type="button" class="tool-btn" data-tool="bold"><strong>B</strong></button>
-                            <button type="button" class="tool-btn" data-tool="italic"><em>I</em></button>
-                            <button type="button" class="tool-btn" data-tool="underline"><u>U</u></button>
-                            <button type="button" class="tool-btn" data-tool="strikethrough"><s>S</s></button>
-                            <div style="width: 1px; height: 20px; background: #ccc; margin: 0 5px;"></div>
-                            <button type="button" class="tool-btn" data-tool="h1">H1</button>
-                            <button type="button" class="tool-btn" data-tool="h2">H2</button>
-                            <button type="button" class="tool-btn" data-tool="quote">❝</button>
+                        <div class="editor-header">
+                            <label for="storyContent">Your Story *</label>
+                            <button type="button" class="expand-btn" onclick="openFullscreen()">⛶ Fullscreen</button>
                         </div>
-                        <textarea 
-                            id="storyContent" 
+                        <div class="writing-tools">
+                            <button type="button" class="tool-btn" data-tool="bold" tabindex="-1"><strong>B</strong></button>
+                            <button type="button" class="tool-btn" data-tool="italic" tabindex="-1"><em>I</em></button>
+                            <button type="button" class="tool-btn" data-tool="underline" tabindex="-1"><u>U</u></button>
+                            <button type="button" class="tool-btn" data-tool="strikethrough" tabindex="-1"><s>S</s></button>
+                        </div>
+                        <div 
+                            id="storyContent"
                             class="story-editor"
-                            placeholder="Share your story with your friends... What happened? How did it make you feel? What did you learn?"
-                            required
-                        ></textarea>
+                            contenteditable="true"
+                            tabindex="3"
+                            data-placeholder="Share your story with your friends... What happened? How did it make you feel?"
+                        ></div>
                     </div>
 
                     <div class="photo-section">
                         <label>Add Photos (up to 2)</label>
                         <div class="photo-upload">
                             <input type="file" id="photoInput" accept="image/*" multiple style="display: none;">
-                            <button type="button" class="photo-btn" onclick="document.getElementById('photoInput').click()">
+                            <button type="button" class="photo-btn" onclick="document.getElementById('photoInput').click()" tabindex="4">
                                 📷 Add Photo
                             </button>
                             <span id="photoCount">0/2 photos</span>
@@ -505,11 +671,10 @@
                         <div id="photoPreview" class="photo-preview"></div>
                     </div>
                     
-                    <button type="submit" class="btn">Share Your Story</button>
+                    <button type="submit" class="btn" tabindex="5" id="submitStoryBtn">Share Your Story</button>
                 </form>
             </div>
 
-            <!-- Invite Friends Card -->
             <div class="card">
                 <h2 class="card-title">
                     <span>👥</span>
@@ -518,11 +683,11 @@
 
                 <div class="flipbook-info">
                     <h4>📖 Weekly Flipbook Chronicle</h4>
-                    <p>Every Monday, we compile one story from each friend into a beautiful digital flipbook. Your stories appear in your friends' flipbooks too!</p>
+                    <p>Every Monday, we compile one story from each friend into a beautiful digital flipbook!</p>
                 </div>
                 
                 <div class="success-message" id="inviteSuccess">
-                    Friend invited successfully! They'll receive an invitation to join your chronicle.
+                    Friend invited successfully!
                 </div>
                 
                 <div class="invite-section">
@@ -541,13 +706,11 @@
                     </form>
                 </div>
 
-                <div class="friends-list" id="friendsList">
-                    <!-- Friends will be populated by JavaScript -->
-                </div>
+                <div class="friends-list" id="friendsList"></div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
                     <span class="friend-count" id="friendCount">0/50 friends</span>
-                    <small style="color: #666;">Limit: 50 friends per chronicle</small>
+                    <small style="color: #666;">Limit: 50 friends</small>
                 </div>
 
                 <button type="button" class="btn clear-data-btn" onclick="clearFriendsData()">
@@ -555,7 +718,6 @@
                 </button>
             </div>
 
-            <!-- Latest Stories Section -->
             <div class="card stories-section">
                 <h2 class="stories-header">
                     <span>📚</span>
@@ -564,12 +726,10 @@
                 
                 <div class="flipbook-info">
                     <h4>Next Flipbook: Monday, <span id="nextMonday"></span></h4>
-                    <p>Stories collected this week will be compiled into your weekly chronicle flipbook.</p>
+                    <p>Stories collected this week will be compiled into your chronicle.</p>
                 </div>
                 
-                <div id="storiesContainer">
-                    <!-- Stories will be populated by JavaScript -->
-                </div>
+                <div id="storiesContainer"></div>
 
                 <button type="button" class="btn clear-data-btn" onclick="clearStoriesData()">
                     Clear Stories (Test)
@@ -578,31 +738,65 @@
         </div>
     </div>
 
+    <div class="fullscreen-overlay" id="fullscreenOverlay">
+        <div class="fullscreen-editor">
+            <div class="fullscreen-header">
+                <div class="fullscreen-title">✍️ Story Editor</div>
+                <button class="close-fullscreen" onclick="closeFullscreen()">Close & Save</button>
+            </div>
+            <div class="writing-tools">
+                <button type="button" class="tool-btn" data-tool="bold" data-target="fullscreen"><strong>B</strong></button>
+                <button type="button" class="tool-btn" data-tool="italic" data-target="fullscreen"><em>I</em></button>
+                <button type="button" class="tool-btn" data-tool="underline" data-target="fullscreen"><u>U</u></button>
+                <button type="button" class="tool-btn" data-tool="strikethrough" data-target="fullscreen"><s>S</s></button>
+            </div>
+            <div 
+                id="fullscreenContent"
+                contenteditable="true"
+            ></div>
+        </div>
+    </div>
+
     <script>
-        // Data storage keys
         const STORIES_KEY = 'actaDiurna_stories';
         const FRIENDS_KEY = 'actaDiurna_friends';
-        const PHOTOS_KEY = 'actaDiurna_photos';
 
-        // In-memory state
         let uploadedPhotos = [];
         let friends = [];
         let stories = [];
+        let editingStoryId = null;
 
-        // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
             updateNextMonday();
             updateDisplay();
         });
 
-        // Data persistence functions
+        function openFullscreen() {
+            const mainEditor = document.getElementById('storyContent');
+            const fullscreenEditor = document.getElementById('fullscreenContent');
+            const overlay = document.getElementById('fullscreenOverlay');
+            
+            fullscreenEditor.innerHTML = mainEditor.innerHTML;
+            overlay.classList.add('active');
+            fullscreenEditor.focus();
+        }
+
+        function closeFullscreen() {
+            const mainEditor = document.getElementById('storyContent');
+            const fullscreenEditor = document.getElementById('fullscreenContent');
+            const overlay = document.getElementById('fullscreenOverlay');
+            
+            mainEditor.innerHTML = fullscreenEditor.innerHTML;
+            overlay.classList.remove('active');
+        }
+
         function saveData() {
             try {
                 localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
                 localStorage.setItem(FRIENDS_KEY, JSON.stringify(friends));
             } catch (e) {
-                console.warn('Could not save data to localStorage:', e);
+                console.warn('Could not save:', e);
             }
         }
 
@@ -618,16 +812,11 @@
                     { id: 3, name: 'Emma Rodriguez', email: 'emma@example.com', status: 'pending' }
                 ];
                 
-                // Save initial friends if first time
-                if (!savedFriends) {
-                    saveData();
-                }
+                if (!savedFriends) saveData();
             } catch (e) {
-                console.warn('Could not load data from localStorage:', e);
                 friends = [
                     { id: 1, name: 'Sarah Johnson', email: 'sarah@example.com', status: 'active' },
-                    { id: 2, name: 'Mike Chen', email: 'mike@example.com', status: 'active' },
-                    { id: 3, name: 'Emma Rodriguez', email: 'emma@example.com', status: 'pending' }
+                    { id: 2, name: 'Mike Chen', email: 'mike@example.com', status: 'active' }
                 ];
                 stories = [];
             }
@@ -648,7 +837,7 @@
                     <div class="friend-info">
                         <div class="friend-name">${friend.name}</div>
                         <div class="friend-status ${friend.status}">
-                            ${friend.status === 'active' ? '✅ Active Writer' : '⏳ Invitation Pending'}
+                            ${friend.status === 'active' ? '✅ Active Writer' : '⏳ Pending'}
                         </div>
                     </div>
                 </div>
@@ -656,10 +845,9 @@
 
             friendCount.textContent = `${friends.length}/50 friends`;
             
-            // Disable invite button if at limit
             if (friends.length >= 50) {
                 inviteBtn.disabled = true;
-                inviteBtn.textContent = 'Friend Limit Reached';
+                inviteBtn.textContent = 'Limit Reached';
             } else {
                 inviteBtn.disabled = false;
                 inviteBtn.textContent = 'Send Invitation';
@@ -673,12 +861,16 @@
                 storiesContainer.innerHTML = `
                     <div class="no-stories">
                         <p><em>No stories submitted yet this week</em></p>
-                        <p>Be the first to share a story for this week's flipbook!</p>
+                        <p>Be the first to share a story!</p>
                     </div>
                 `;
             } else {
                 storiesContainer.innerHTML = stories.map(story => `
                     <div class="story-item">
+                        <div class="story-actions">
+                            <button class="story-action-btn edit" onclick="editStory(${story.id})">✏️ Edit</button>
+                            <button class="story-action-btn delete" onclick="deleteStory(${story.id})">🗑️ Delete</button>
+                        </div>
                         <h3 class="story-title">${story.title}</h3>
                         <p class="story-meta">By ${story.author} • ${story.date}</p>
                         <div class="story-content">${story.content}</div>
@@ -692,88 +884,105 @@
             }
         }
 
+        function editStory(storyId) {
+            const story = stories.find(s => s.id === storyId);
+            if (!story) return;
+
+            editingStoryId = storyId;
+            
+            document.getElementById('storyTitle').value = story.title;
+            document.getElementById('authorName').value = story.author === 'Anonymous' ? '' : story.author;
+            document.getElementById('storyContent').innerHTML = story.content;
+            
+            uploadedPhotos = story.photos ? story.photos.map((src, idx) => ({
+                id: Date.now() + idx,
+                src: src,
+                name: `photo-${idx}`
+            })) : [];
+            updatePhotoPreview();
+
+            document.getElementById('submitStoryBtn').textContent = 'Update Story';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteStory(storyId) {
+            if (confirm('Delete this story?')) {
+                stories = stories.filter(s => s.id !== storyId);
+                saveData();
+                updateStoriesDisplay();
+            }
+        }
+
         function updateNextMonday() {
             const today = new Date();
             const nextMonday = new Date(today);
-            const daysUntilMonday = (1 + 7 - today.getDay()) % 7 || 7;
-            nextMonday.setDate(today.getDate() + daysUntilMonday);
+            const days = (1 + 7 - today.getDay()) % 7 || 7;
+            nextMonday.setDate(today.getDate() + days);
             
-            const options = { month: 'long', day: 'numeric' };
-            document.getElementById('nextMonday').textContent = nextMonday.toLocaleDateString('en-US', options);
+            document.getElementById('nextMonday').textContent = nextMonday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
         }
 
-        // Writing tools functionality
         document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('mousedown', e => e.preventDefault());
+            
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 const tool = this.dataset.tool;
-                const textarea = document.getElementById('storyContent');
-                const start = textarea.selectionStart;
-                const end = textarea.selectionEnd;
-                const text = textarea.value;
-                const selectedText = text.substring(start, end);
+                const target = this.dataset.target;
+                const editorId = target === 'fullscreen' ? 'fullscreenContent' : 'storyContent';
+                const editor = document.getElementById(editorId);
                 
-                let newText = '';
-                let cursorOffset = 0;
+                const sel = window.getSelection();
+                if (!sel.rangeCount) return;
                 
-                switch(tool) {
-                    case 'bold':
-                        newText = `**${selectedText || 'bold text'}**`;
-                        cursorOffset = selectedText ? 0 : -11;
-                        break;
-                    case 'italic':
-                        newText = `*${selectedText || 'italic text'}*`;
-                        cursorOffset = selectedText ? 0 : -12;
-                        break;
-                    case 'underline':
-                        newText = `<u>${selectedText || 'underlined text'}</u>`;
-                        cursorOffset = selectedText ? 0 : -18;
-                        break;
-                    case 'strikethrough':
-                        newText = `~~${selectedText || 'strikethrough text'}~~`;
-                        cursorOffset = selectedText ? 0 : -20;
-                        break;
-                    case 'h1':
-                        newText = `# ${selectedText || 'Heading 1'}`;
-                        cursorOffset = selectedText ? 0 : -11;
-                        break;
-                    case 'h2':
-                        newText = `## ${selectedText || 'Heading 2'}`;
-                        cursorOffset = selectedText ? 0 : -12;
-                        break;
-                    case 'quote':
-                        newText = `> ${selectedText || 'Quote text'}`;
-                        cursorOffset = selectedText ? 0 : -12;
-                        break;
+                const range = sel.getRangeAt(0);
+                if (range.collapsed) {
+                    alert('Please select text first');
+                    return;
                 }
                 
-                textarea.value = text.substring(0, start) + newText + text.substring(end);
-                textarea.focus();
+                let el;
+                switch(tool) {
+                    case 'bold': el = document.createElement('strong'); break;
+                    case 'italic': el = document.createElement('em'); break;
+                    case 'underline': el = document.createElement('u'); break;
+                    case 'strikethrough': el = document.createElement('s'); break;
+                }
                 
-                const newPos = start + newText.length + cursorOffset;
-                textarea.setSelectionRange(newPos, newPos);
+                try {
+                    const contents = range.extractContents();
+                    el.appendChild(contents);
+                    range.insertNode(el);
+                    
+                    range.setStartAfter(el);
+                    range.setEndAfter(el);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                } catch(err) {
+                    console.log('Format error:', err);
+                }
+                
+                editor.focus();
             });
         });
 
-        // Photo upload functionality
         document.getElementById('photoInput').addEventListener('change', function(e) {
             const files = Array.from(e.target.files);
             
             files.forEach(file => {
-                if (uploadedPhotos.length < 2 && file.size <= 5 * 1024 * 1024) { // 5MB limit
+                if (uploadedPhotos.length < 2 && file.size <= 5 * 1024 * 1024) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        const photoObj = {
+                        uploadedPhotos.push({
                             id: Date.now() + Math.random(),
                             src: e.target.result,
                             name: file.name
-                        };
-                        uploadedPhotos.push(photoObj);
+                        });
                         updatePhotoPreview();
                     };
                     reader.readAsDataURL(file);
                 } else if (file.size > 5 * 1024 * 1024) {
-                    alert(`File ${file.name} is too large. Maximum size is 5MB.`);
+                    alert(`File too large: ${file.name}`);
                 }
             });
         });
@@ -797,104 +1006,98 @@
             updatePhotoPreview();
         }
 
-        // Handle story submission
         document.getElementById('storyForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const title = document.getElementById('storyTitle').value.trim();
             const author = document.getElementById('authorName').value.trim() || 'Anonymous';
-            const content = document.getElementById('storyContent').value.trim();
+            const contentEditor = document.getElementById('storyContent');
+            const content = contentEditor.innerHTML.trim();
             
             if (!title || !content) {
-                alert('Please fill in both title and story content.');
+                alert('Please fill in title and story');
                 return;
             }
             
-            // Create story object
-            const story = {
-                id: Date.now(),
-                title: title,
-                author: author,
-                content: content,
-                photos: uploadedPhotos.map(photo => photo.src),
-                date: new Date().toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })
-            };
+            if (editingStoryId) {
+                const idx = stories.findIndex(s => s.id === editingStoryId);
+                if (idx !== -1) {
+                    stories[idx] = {
+                        ...stories[idx],
+                        title: title,
+                        author: author,
+                        content: content,
+                        photos: uploadedPhotos.map(p => p.src),
+                        date: stories[idx].date + ' (edited)'
+                    };
+                }
+                editingStoryId = null;
+                document.getElementById('submitStoryBtn').textContent = 'Share Your Story';
+                alert('Story updated! 📖✨');
+            } else {
+                stories.unshift({
+                    id: Date.now(),
+                    title: title,
+                    author: author,
+                    content: content,
+                    photos: uploadedPhotos.map(p => p.src),
+                    date: new Date().toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                });
+                alert('Story submitted! 📖✨');
+            }
             
-            // Add to stories array
-            stories.unshift(story); // Add to beginning of array
-            
-            // Save to localStorage
             saveData();
-            
-            // Update display
             updateStoriesDisplay();
             
-            // Reset form
             this.reset();
+            contentEditor.innerHTML = '';
             uploadedPhotos = [];
             updatePhotoPreview();
-            
-            // Show success feedback
-            alert('Story submitted for this week\'s flipbook! 📖✨');
         });
         
-        // Handle friend invitation
         document.getElementById('inviteForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             if (friends.length >= 50) {
-                alert('You\'ve reached the maximum of 50 friends per chronicle.');
+                alert('Friend limit reached');
                 return;
             }
             
             const email = document.getElementById('friendEmail').value.trim();
             
-            // Check if friend already exists
-            if (friends.some(friend => friend.email.toLowerCase() === email.toLowerCase())) {
-                alert('This friend is already in your chronicle!');
+            if (friends.some(f => f.email.toLowerCase() === email.toLowerCase())) {
+                alert('Friend already added');
                 return;
             }
             
-            const name = email.split('@')[0].replace(/[._]/g, ' '); // Simple name extraction
+            const name = email.split('@')[0].replace(/[._]/g, ' ');
             
-            // Add friend to array
-            const friend = {
+            friends.push({
                 id: Date.now(),
                 name: name.charAt(0).toUpperCase() + name.slice(1),
                 email: email,
                 status: 'pending'
-            };
+            });
             
-            friends.push(friend);
-            
-            // Save to localStorage
             saveData();
-            
-            // Update display
             updateFriendsDisplay();
             
-            // Show success message
-            const successMsg = document.getElementById('inviteSuccess');
-            successMsg.style.display = 'block';
+            const msg = document.getElementById('inviteSuccess');
+            msg.style.display = 'block';
             
-            // Reset form
             this.reset();
             
-            // Hide success message after 5 seconds
-            setTimeout(() => {
-                successMsg.style.display = 'none';
-            }, 5000);
+            setTimeout(() => msg.style.display = 'none', 5000);
         });
 
-        // Test/admin functions
         function clearFriendsData() {
-            if (confirm('Are you sure you want to clear all friends? This cannot be undone.')) {
+            if (confirm('Clear all friends?')) {
                 friends = [];
                 saveData();
                 updateFriendsDisplay();
@@ -902,16 +1105,15 @@
         }
 
         function clearStoriesData() {
-            if (confirm('Are you sure you want to clear all stories? This cannot be undone.')) {
+            if (confirm('Clear all stories?')) {
                 stories = [];
                 saveData();
                 updateStoriesDisplay();
             }
         }
 
-        // Clear all data function (can be called from browser console)
         window.clearAllData = function() {
-            if (confirm('This will clear ALL data including friends and stories. Continue?')) {
+            if (confirm('Clear ALL data?')) {
                 localStorage.removeItem(STORIES_KEY);
                 localStorage.removeItem(FRIENDS_KEY);
                 location.reload();
@@ -919,3 +1121,4 @@
         };
     </script>
 </body>
+</html>
