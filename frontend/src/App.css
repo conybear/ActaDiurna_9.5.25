@@ -31,3 +31,79 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(139, 69, 19, 0.7);
 }
+
+/* Quill Editor Styling */
+.ql-toolbar {
+  background: #fef3c7 !important;
+  border: 2px solid #fcd34d !important;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.ql-container {
+  border: 2px solid #fcd34d !important;
+  border-top: none !important;
+  border-radius: 0 0 8px 8px !important;
+  font-family: 'Merriweather', Georgia, serif !important;
+  font-size: 16px !important;
+}
+
+.ql-editor {
+  min-height: 400px;
+  padding: 20px !important;
+}
+
+.ql-editor.ql-blank::before {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.ql-snow .ql-stroke {
+  stroke: #92400e !important;
+}
+
+.ql-snow .ql-fill {
+  fill: #92400e !important;
+}
+
+.ql-snow .ql-picker-label {
+  color: #92400e !important;
+}
+
+.ql-toolbar button:hover,
+.ql-toolbar button.ql-active {
+  background: #fbbf24 !important;
+}
+
+/* Prose styling for rendered HTML content */
+.prose {
+  font-family: 'Merriweather', Georgia, serif;
+}
+
+.prose h1, .prose h2, .prose h3 {
+  font-family: 'Playfair Display', serif;
+  color: #92400e;
+}
+
+.prose strong {
+  font-weight: 700;
+  color: #78350f;
+}
+
+.prose a {
+  color: #d97706;
+  text-decoration: underline;
+}
+
+.prose blockquote {
+  border-left: 4px solid #fbbf24;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #78350f;
+}
+
+.prose code {
+  background: #fef3c7;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
