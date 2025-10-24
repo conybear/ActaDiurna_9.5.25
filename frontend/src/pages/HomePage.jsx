@@ -3,25 +3,39 @@ import { authAxios } from '@/App';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { Scroll, PenTool, Users, BookOpen, LogOut, Upload, X, UserPlus, Check, XIcon } from 'lucide-react';
+import { Scroll, Users, BookOpen, LogOut, UserPlus, Check, XIcon, Maximize2, Edit, Trash2 } from 'lucide-react';
 import FlipbookModal from '@/components/FlipbookModal';
+import StoryEditorModal from '@/components/StoryEditorModal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const HomePage = ({ user, setUser }) => {
   const [stories, setStories] = useState([]);
+  const [myStories, setMyStories] = useState([]);
   const [friends, setFriends] = useState([]);
   const [friendRequests, setFriendRequests] = useState([]);
-  const [newStory, setNewStory] = useState({ title: '', content: '', photos: [] });
   const [friendEmail, setFriendEmail] = useState('');
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [showFlipbook, setShowFlipbook] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [editingStory, setEditingStory] = useState(null);
+  const [deletingStory, setDeletingStory] = useState(null);
 
   useEffect(() => {
     fetchStories();
+    fetchMyStories();
     fetchFriends();
     fetchFriendRequests();
   }, []);
@@ -32,6 +46,15 @@ const HomePage = ({ user, setUser }) => {
       setStories(res.data);
     } catch (error) {
       console.error('Failed to fetch stories', error);
+    }
+  };
+
+  const fetchMyStories = async () => {
+    try {
+      const res = await authAxios.get('/stories/my');
+      setMyStories(res.data);
+    } catch (error) {
+      console.error('Failed to fetch my stories', error);
     }
   };
 
@@ -51,51 +74,6 @@ const HomePage = ({ user, setUser }) => {
     } catch (error) {
       console.error('Failed to fetch friend requests', error);
     }
-  };
-
-  const handleCreateStory = async (e) => {
-    e.preventDefault();
-    if (!newStory.title.trim() || !newStory.content.trim()) {
-      toast.error('Please fill in title and content');
-      return;
-    }
-
-    try {
-      await authAxios.post('/stories', newStory);
-      toast.success('Story published!');
-      setNewStory({ title: '', content: '', photos: [] });
-      fetchStories();
-    } catch (error) {
-      toast.error('Failed to create story');
-    }
-  };
-
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setUploadingImage(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await authAxios.post('/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      setNewStory({ ...newStory, photos: [...newStory.photos, res.data.url] });
-      toast.success('Image uploaded!');
-    } catch (error) {
-      toast.error(error.response?.data?.detail || 'Image upload failed. Please add Cloudinary credentials.');
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
-  const removePhoto = (index) => {
-    setNewStory({
-      ...newStory,
-      photos: newStory.photos.filter((_, i) => i !== index)
-    });
   };
 
   const handleSendFriendRequest = async (e) => {
@@ -123,11 +101,90 @@ const HomePage = ({ user, setUser }) => {
     }
   };
 
+  const handleEditStory = (story) => {
+    setEditingStory(story);
+    setShowEditor(true);
+  };
+
+  const handleDeleteStory = async () => {
+    if (!deletingStory) return;
+
+    try {
+      await authAxios.delete(`/stories/${deletingStory.id}`);
+      toast.success('Story deleted');
+      setDeletingStory(null);
+      fetchMyStories();
+      fetchStories();
+    } catch (error) {
+      toast.error('Failed to delete story');
+    }
+  };
+
+  const handleEditorSuccess = () => {
+    fetchStories();
+    fetchMyStories();
+    setEditingStory(null);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     setUser(null);
     toast.success('Logged out successfully');
   };
+
+  const renderStory = (story, showActions = false) => (
+    <div
+      key={story.id}
+      data-testid={`story-${story.id}`}
+      className="border-2 border-amber-200 rounded-xl p-6 bg-amber-50/50"
+    >
+      <div className="flex items-start justify-between mb-2">
+        <h3 className="text-xl font-bold text-amber-900 flex-1">{story.title}</h3>
+        {showActions && (
+          <div className="flex gap-2 ml-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => handleEditStory(story)}
+              data-testid={`edit-story-${story.id}`}
+              className="border-amber-400 hover:bg-amber-50"
+            >
+              <Edit className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setDeletingStory(story)}
+              data-testid={`delete-story-${story.id}`}
+              className="border-red-300 hover:bg-red-50 text-red-600"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+      <p className="text-sm text-gray-600 mb-3">
+        By {story.username} • {new Date(story.created_at).toLocaleDateString()}
+      </p>
+      <Separator className="mb-3" />
+      <div
+        className="text-gray-800 leading-relaxed mb-4 prose prose-amber max-w-none"
+        dangerouslySetInnerHTML={{ __html: story.content }}
+      />
+      {story.photos.length > 0 && (
+        <div className="flex gap-3 flex-wrap">
+          {story.photos.map((photo, idx) => (
+            <img
+              key={idx}
+              src={photo}
+              alt={`Story ${idx + 1}`}
+              className="w-24 h-24 object-cover rounded-lg border-2 border-amber-300"
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-600 via-orange-500 to-amber-400 p-4 md:p-8">
@@ -161,243 +218,204 @@ const HomePage = ({ user, setUser }) => {
           </div>
         </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Create Story Card */}
-          <Card className="shadow-xl border-2 border-amber-900/20 backdrop-blur-sm" data-testid="create-story-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-amber-900">
-                <PenTool className="w-6 h-6" />
-                Share Your Story
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleCreateStory} className="space-y-4">
-                <div>
-                  <Label htmlFor="title">Title</Label>
-                  <Input
-                    id="title"
-                    data-testid="story-title-input"
-                    placeholder="Give your story a title..."
-                    value={newStory.title}
-                    onChange={(e) => setNewStory({ ...newStory, title: e.target.value })}
-                    className="border-amber-200 focus:border-amber-500"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="content">Your Story</Label>
-                  <Textarea
-                    id="content"
-                    data-testid="story-content-input"
-                    placeholder="Write your story here..."
-                    value={newStory.content}
-                    onChange={(e) => setNewStory({ ...newStory, content: e.target.value })}
-                    rows={5}
-                    className="border-amber-200 focus:border-amber-500 resize-none"
-                  />
-                </div>
-
-                <div>
-                  <Label>Photos</Label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="file"
-                      id="photo-upload"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      data-testid="upload-photo-btn"
-                      variant="outline"
-                      onClick={() => document.getElementById('photo-upload').click()}
-                      disabled={uploadingImage}
-                      className="border-2 border-dashed border-amber-500 hover:bg-amber-50"
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      {uploadingImage ? 'Uploading...' : 'Add Photo'}
-                    </Button>
-                  </div>
-
-                  {newStory.photos.length > 0 && (
-                    <div className="flex gap-2 mt-3 flex-wrap" data-testid="photo-preview-container">
-                      {newStory.photos.map((photo, idx) => (
-                        <div key={idx} className="relative group">
-                          <img
-                            src={photo}
-                            alt={`Upload ${idx + 1}`}
-                            className="w-20 h-20 object-cover rounded-lg border-2 border-amber-200"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removePhoto(idx)}
-                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <Button
-                  type="submit"
-                  data-testid="publish-story-btn"
-                  className="w-full bg-amber-700 hover:bg-amber-800 text-white font-semibold py-6 rounded-xl"
-                >
-                  Publish Story
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-
-          {/* Friends Card */}
-          <Card className="shadow-xl border-2 border-amber-900/20" data-testid="friends-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-amber-900">
-                <Users className="w-6 h-6" />
-                Friends ({friends.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSendFriendRequest} className="mb-4">
-                <Label htmlFor="friend-email">Invite Friend by Email</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="friend-email"
-                    data-testid="friend-email-input"
-                    type="email"
-                    placeholder="friend@email.com"
-                    value={friendEmail}
-                    onChange={(e) => setFriendEmail(e.target.value)}
-                    className="border-amber-200 focus:border-amber-500"
-                  />
-                  <Button
-                    type="submit"
-                    data-testid="send-friend-request-btn"
-                    className="bg-amber-700 hover:bg-amber-800"
-                  >
-                    <UserPlus className="w-4 h-4" />
-                  </Button>
-                </div>
-              </form>
-
-              {friendRequests.length > 0 && (
-                <div className="mb-4" data-testid="friend-requests-section">
-                  <Label className="text-amber-900 font-semibold mb-2 block">Pending Requests</Label>
-                  <ScrollArea className="h-32 border rounded-lg">
-                    {friendRequests.map((req) => (
-                      <div key={req.id} className="flex items-center justify-between p-3 border-b last:border-b-0">
-                        <span className="font-medium">{req.from_username}</span>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleFriendRequestAction(req.id, 'accept')}
-                            data-testid={`accept-request-${req.id}`}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            <Check className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() => handleFriendRequestAction(req.id, 'reject')}
-                            data-testid={`reject-request-${req.id}`}
-                            variant="destructive"
-                          >
-                            <XIcon className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </ScrollArea>
-                </div>
-              )}
-
-              <ScrollArea className="h-48 border rounded-lg">
-                {friends.length === 0 ? (
-                  <div className="p-8 text-center text-gray-500">
-                    <p>No friends yet. Invite someone to get started!</p>
-                  </div>
-                ) : (
-                  friends.map((friend) => (
-                    <div key={friend.id} className="flex items-center justify-between p-3 border-b last:border-b-0">
-                      <div>
-                        <p className="font-semibold text-amber-900">{friend.username}</p>
-                        <p className="text-sm text-green-600">{friend.status}</p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </ScrollArea>
-            </CardContent>
-          </Card>
+        {/* Quick Actions */}
+        <div className="flex gap-3 mb-6">
+          <Button
+            onClick={() => {
+              setEditingStory(null);
+              setShowEditor(true);
+            }}
+            data-testid="open-editor-btn"
+            className="bg-amber-700 hover:bg-amber-800 text-white font-semibold py-6 px-8 rounded-xl shadow-lg"
+          >
+            <Maximize2 className="w-5 h-5 mr-2" />
+            Write a Story
+          </Button>
+          <Button
+            onClick={() => setShowFlipbook(true)}
+            data-testid="open-flipbook-btn"
+            className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-6 px-8 rounded-xl shadow-lg"
+          >
+            <Scroll className="w-5 h-5 mr-2" />
+            Open Flipbook
+          </Button>
         </div>
 
-        {/* Stories Section */}
-        <Card className="shadow-xl border-2 border-amber-900/20" data-testid="stories-section">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-amber-900">
-              <BookOpen className="w-6 h-6" />
-              Stories from Friends
-            </CardTitle>
-            <Button
-              onClick={() => setShowFlipbook(true)}
-              data-testid="open-flipbook-btn"
-              className="bg-amber-700 hover:bg-amber-800"
-            >
-              <Scroll className="w-4 h-4 mr-2" />
-              Open Flipbook
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {stories.length === 0 ? (
-              <div className="text-center py-16 text-gray-500">
-                <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                <p className="text-lg">No stories yet</p>
-                <p className="text-sm">Add friends and start sharing stories!</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {stories.map((story) => (
-                  <div
-                    key={story.id}
-                    data-testid={`story-${story.id}`}
-                    className="border-2 border-amber-200 rounded-xl p-6 bg-amber-50/50"
-                  >
-                    <h3 className="text-xl font-bold text-amber-900 mb-2">{story.title}</h3>
-                    <p className="text-sm text-gray-600 mb-3">
-                      By {story.username} • {new Date(story.created_at).toLocaleDateString()}
-                    </p>
-                    <Separator className="mb-3" />
-                    <p className="text-gray-800 whitespace-pre-wrap leading-relaxed mb-4">{story.content}</p>
-                    {story.photos.length > 0 && (
-                      <div className="flex gap-3 flex-wrap">
-                        {story.photos.map((photo, idx) => (
-                          <img
-                            key={idx}
-                            src={photo}
-                            alt={`Story ${idx + 1}`}
-                            className="w-24 h-24 object-cover rounded-lg border-2 border-amber-300"
-                          />
-                        ))}
-                      </div>
-                    )}
+        {/* Main Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Friends Sidebar */}
+          <div className="lg:col-span-1">
+            <Card className="shadow-xl border-2 border-amber-900/20" data-testid="friends-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-amber-900">
+                  <Users className="w-6 h-6" />
+                  Friends ({friends.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSendFriendRequest} className="mb-4">
+                  <Label htmlFor="friend-email">Invite Friend by Email</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="friend-email"
+                      data-testid="friend-email-input"
+                      type="email"
+                      placeholder="friend@email.com"
+                      value={friendEmail}
+                      onChange={(e) => setFriendEmail(e.target.value)}
+                      className="border-amber-200 focus:border-amber-500"
+                    />
+                    <Button
+                      type="submit"
+                      data-testid="send-friend-request-btn"
+                      className="bg-amber-700 hover:bg-amber-800"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                    </Button>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                </form>
+
+                {friendRequests.length > 0 && (
+                  <div className="mb-4" data-testid="friend-requests-section">
+                    <Label className="text-amber-900 font-semibold mb-2 block">Pending Requests</Label>
+                    <ScrollArea className="h-32 border rounded-lg">
+                      {friendRequests.map((req) => (
+                        <div key={req.id} className="flex items-center justify-between p-3 border-b last:border-b-0">
+                          <span className="font-medium">{req.from_username}</span>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => handleFriendRequestAction(req.id, 'accept')}
+                              data-testid={`accept-request-${req.id}`}
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              <Check className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={() => handleFriendRequestAction(req.id, 'reject')}
+                              data-testid={`reject-request-${req.id}`}
+                              variant="destructive"
+                            >
+                              <XIcon className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </ScrollArea>
+                  </div>
+                )}
+
+                <ScrollArea className="h-64 border rounded-lg">
+                  {friends.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">
+                      <p>No friends yet. Invite someone to get started!</p>
+                    </div>
+                  ) : (
+                    friends.map((friend) => (
+                      <div key={friend.id} className="flex items-center justify-between p-3 border-b last:border-b-0">
+                        <div>
+                          <p className="font-semibold text-amber-900">{friend.username}</p>
+                          <p className="text-sm text-green-600">{friend.status}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Stories Section */}
+          <div className="lg:col-span-2">
+            <Card className="shadow-xl border-2 border-amber-900/20" data-testid="stories-section">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-amber-900">
+                  <BookOpen className="w-6 h-6" />
+                  Stories
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="feed" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-6">
+                    <TabsTrigger value="feed" data-testid="feed-tab">Friends' Stories</TabsTrigger>
+                    <TabsTrigger value="my" data-testid="my-stories-tab">My Stories ({myStories.length})</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="feed" data-testid="feed-content">
+                    {stories.length === 0 ? (
+                      <div className="text-center py-16 text-gray-500">
+                        <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                        <p className="text-lg">No stories yet</p>
+                        <p className="text-sm">Add friends and start sharing stories!</p>
+                      </div>
+                    ) : (
+                      <ScrollArea className="h-[600px] pr-4">
+                        <div className="space-y-4">
+                          {stories.map((story) => renderStory(story, false))}
+                        </div>
+                      </ScrollArea>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="my" data-testid="my-stories-content">
+                    {myStories.length === 0 ? (
+                      <div className="text-center py-16 text-gray-500">
+                        <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                        <p className="text-lg">You haven't written any stories yet</p>
+                        <p className="text-sm">Click "Write a Story" to get started!</p>
+                      </div>
+                    ) : (
+                      <ScrollArea className="h-[600px] pr-4">
+                        <div className="space-y-4">
+                          {myStories.map((story) => renderStory(story, true))}
+                        </div>
+                      </ScrollArea>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
 
+      {/* Modals */}
       <FlipbookModal
         open={showFlipbook}
         onClose={() => setShowFlipbook(false)}
         stories={stories}
       />
+
+      <StoryEditorModal
+        open={showEditor}
+        onClose={() => {
+          setShowEditor(false);
+          setEditingStory(null);
+        }}
+        onSuccess={handleEditorSuccess}
+        initialStory={editingStory}
+      />
+
+      <AlertDialog open={!!deletingStory} onOpenChange={() => setDeletingStory(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Story?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{deletingStory?.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteStory}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
