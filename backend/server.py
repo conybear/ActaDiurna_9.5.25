@@ -246,6 +246,42 @@ async def get_my_stories(current_user: dict = Depends(get_current_user)):
     
     return stories
 
+@api_router.put("/stories/{story_id}", response_model=Story)
+async def update_story(story_id: str, story_data: StoryCreate, current_user: dict = Depends(get_current_user)):
+    # Check if story exists and belongs to user
+    story = await db.stories.find_one({"id": story_id, "user_id": current_user['id']})
+    if not story:
+        raise HTTPException(status_code=404, detail="Story not found or unauthorized")
+    
+    # Update story
+    update_data = {
+        "title": story_data.title,
+        "content": story_data.content,
+        "photos": story_data.photos
+    }
+    
+    await db.stories.update_one(
+        {"id": story_id},
+        {"$set": update_data}
+    )
+    
+    # Return updated story
+    updated_story = await db.stories.find_one({"id": story_id}, {"_id": 0})
+    if isinstance(updated_story['created_at'], str):
+        updated_story['created_at'] = datetime.fromisoformat(updated_story['created_at'])
+    
+    return Story(**updated_story)
+
+@api_router.delete("/stories/{story_id}")
+async def delete_story(story_id: str, current_user: dict = Depends(get_current_user)):
+    # Check if story exists and belongs to user
+    story = await db.stories.find_one({"id": story_id, "user_id": current_user['id']})
+    if not story:
+        raise HTTPException(status_code=404, detail="Story not found or unauthorized")
+    
+    await db.stories.delete_one({"id": story_id})
+    return {"message": "Story deleted"}
+
 # Image upload
 @api_router.post("/upload")
 async def upload_image(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
