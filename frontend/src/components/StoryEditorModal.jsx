@@ -1,13 +1,12 @@
-import { useState, useRef } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { authAxios } from '@/App';
 import { toast } from 'sonner';
-import { Upload, X, Save } from 'lucide-react';
+import { Upload, X, Save, Bold, Italic, Underline, List, ListOrdered, Heading1, Heading2 } from 'lucide-react';
 
 const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => {
   const [story, setStory] = useState(
@@ -15,28 +14,24 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   );
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
-  const quillRef = useRef(null);
+  const editorRef = useRef(null);
 
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'align': [] }],
-      ['blockquote', 'code-block'],
-      ['link'],
-      ['clean']
-    ]
+  useEffect(() => {
+    if (initialStory) {
+      setStory(initialStory);
+    }
+  }, [initialStory]);
+
+  const execCommand = (command, value = null) => {
+    document.execCommand(command, false, value);
+    editorRef.current?.focus();
   };
 
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike',
-    'list', 'bullet',
-    'align',
-    'blockquote', 'code-block',
-    'link'
-  ];
+  const handleContentChange = () => {
+    if (editorRef.current) {
+      setStory({ ...story, content: editorRef.current.innerHTML });
+    }
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
