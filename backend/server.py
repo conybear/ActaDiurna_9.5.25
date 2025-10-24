@@ -300,7 +300,21 @@ async def send_friend_request(request_data: FriendRequestCreate, current_user: d
     # Find user by email
     to_user = await db.users.find_one({"email": request_data.to_email})
     if not to_user:
-        raise HTTPException(status_code=404, detail="User not found")
+        # User doesn't exist yet - send invitation email
+        await send_email(
+            request_data.to_email,
+            f"{current_user['username']} invited you to join Acta Diurna",
+            f"""
+            <h2>You've been invited to Acta Diurna!</h2>
+            <p>{current_user['username']} wants to connect with you on Acta Diurna, a story-sharing platform.</p>
+            <p>Join now to start sharing your stories and connect with friends!</p>
+            <p><a href="https://ancient-posts.preview.emergentagent.com">Sign up here</a></p>
+            """
+        )
+        raise HTTPException(
+            status_code=404, 
+            detail=f"User with email '{request_data.to_email}' hasn't joined yet. An invitation email has been sent!"
+        )
     
     if to_user['id'] == current_user['id']:
         raise HTTPException(status_code=400, detail="Cannot send friend request to yourself")
