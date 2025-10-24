@@ -1,0 +1,83 @@
+{
+  "timestamp": "2025-10-24T20:56:36.223691",
+  "total_tests": 15,
+  "passed_tests": 14,
+  "success_rate": "93.3%",
+  "results": [
+    {
+      "test": "Register User 1",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Register User 2",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "User Login",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Current User",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Create Story (User 1)",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Create Story (User 2)",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get My Stories",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Send Friend Request",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Friend Requests",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Friend Requests for Accept",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Accept Friend Request",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Friends List",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Get Stories Feed",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test": "Image Upload (Expected to Fail)",
+      "success": false,
+      "details": "Expected 400, got 422"
+    },
+    {
+      "test": "Search Users",
+      "success": true,
+      "details": ""
+    }
+  ]
+}
