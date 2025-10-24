@@ -211,9 +211,8 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                 onInput={handleContentChange}
                 data-testid="content-editor"
                 dir="ltr"
-                style={{ textAlign: 'left', direction: 'ltr' }}
+                style={{ textAlign: 'left', direction: 'ltr', unicodeBidi: 'embed' }}
                 className="min-h-[400px] p-6 focus:outline-none prose prose-amber max-w-none"
-                dangerouslySetInnerHTML={{ __html: story.content }}
                 suppressContentEditableWarning
               />
             </div>
