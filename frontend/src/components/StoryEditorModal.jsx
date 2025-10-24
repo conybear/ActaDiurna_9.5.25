@@ -95,7 +95,11 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
       }
       onSuccess();
       onClose();
+      // Reset form
       setStory({ id: null, title: '', content: '', photos: [] });
+      if (editorRef.current) {
+        editorRef.current.innerHTML = '';
+      }
     } catch (error) {
       toast.error('Failed to save story');
     } finally {
