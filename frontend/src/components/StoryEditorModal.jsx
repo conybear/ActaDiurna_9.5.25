@@ -209,15 +209,15 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
               </div>
               
               {/* Editor */}
-              <div
+              <textarea
                 ref={editorRef}
-                contentEditable
-                onInput={handleContentChange}
+                value={story.content}
+                onChange={(e) => setStory({ ...story, content: e.target.value })}
                 data-testid="content-editor"
                 dir="ltr"
-                style={{ textAlign: 'left', direction: 'ltr', unicodeBidi: 'embed' }}
-                className="min-h-[400px] p-6 focus:outline-none prose prose-amber max-w-none"
-                suppressContentEditableWarning
+                placeholder="Write your story here..."
+                className="min-h-[400px] w-full p-6 border-0 focus:outline-none resize-none bg-transparent font-serif text-base leading-relaxed"
+                style={{ textAlign: 'left', direction: 'ltr' }}
               />
             </div>
           </div>
