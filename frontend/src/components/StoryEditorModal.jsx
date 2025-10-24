@@ -22,13 +22,6 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
     }
   }, [initialStory]);
 
-  useEffect(() => {
-    // Set content when editor is ready
-    if (editorRef.current && open) {
-      editorRef.current.innerHTML = story.content || '';
-    }
-  }, [open, story.content]);
-
   const execCommand = (format) => {
     if (!editorRef.current) return;
     
