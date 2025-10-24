@@ -120,16 +120,92 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
 
           <div>
             <Label>Your Story</Label>
-            <div className="bg-white rounded-lg border-2 border-amber-200" data-testid="rich-text-editor">
-              <ReactQuill
-                ref={quillRef}
-                theme="snow"
-                value={story.content}
-                onChange={(content) => setStory({ ...story, content })}
-                modules={modules}
-                formats={formats}
-                placeholder="Write your story here..."
-                className="min-h-[400px]"
+            <div className="bg-white rounded-lg border-2 border-amber-200 overflow-hidden" data-testid="rich-text-editor">
+              {/* Toolbar */}
+              <div className="bg-amber-50 p-2 border-b-2 border-amber-200 flex flex-wrap gap-1">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => execCommand('bold')}
+                  className="hover:bg-amber-200"
+                  data-testid="bold-btn"
+                >
+                  <Bold className="w-4 h-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => execCommand('italic')}
+                  className="hover:bg-amber-200"
+                  data-testid="italic-btn"
+                >
+                  <Italic className="w-4 h-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => execCommand('underline')}
+                  className="hover:bg-amber-200"
+                  data-testid="underline-btn"
+                >
+                  <Underline className="w-4 h-4" />
+                </Button>
+                <Separator orientation="vertical" className="h-8" />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => execCommand('formatBlock', '<h2>')}
+                  className="hover:bg-amber-200"
+                  data-testid="heading1-btn"
+                >
+                  <Heading1 className="w-4 h-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => execCommand('formatBlock', '<h3>')}
+                  className="hover:bg-amber-200"
+                  data-testid="heading2-btn"
+                >
+                  <Heading2 className="w-4 h-4" />
+                </Button>
+                <Separator orientation="vertical" className="h-8" />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => execCommand('insertUnorderedList')}
+                  className="hover:bg-amber-200"
+                  data-testid="bullet-list-btn"
+                >
+                  <List className="w-4 h-4" />
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => execCommand('insertOrderedList')}
+                  className="hover:bg-amber-200"
+                  data-testid="numbered-list-btn"
+                >
+                  <ListOrdered className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              {/* Editor */}
+              <div
+                ref={editorRef}
+                contentEditable
+                onInput={handleContentChange}
+                data-testid="content-editor"
+                className="min-h-[400px] p-6 focus:outline-none prose prose-amber max-w-none"
+                dangerouslySetInnerHTML={{ __html: story.content }}
+                suppressContentEditableWarning
               />
             </div>
           </div>
