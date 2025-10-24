@@ -85,7 +85,13 @@ const HomePage = ({ user, setUser }) => {
       toast.success('Friend request sent!');
       setFriendEmail('');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to send friend request');
+      const errorMsg = error.response?.data?.detail || 'Failed to send friend request';
+      if (error.response?.status === 404) {
+        // User not registered yet - show info message instead of error
+        toast.info(errorMsg, { duration: 5000 });
+      } else {
+        toast.error(errorMsg);
+      }
     }
   };
 
