@@ -78,6 +78,7 @@ class StoryCreate(BaseModel):
     title: str
     content: str
     photos: List[str] = []
+    is_draft: bool = False
 
 class FriendRequest(BaseModel):
     model_config = ConfigDict(extra="ignore")
