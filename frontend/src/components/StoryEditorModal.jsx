@@ -214,15 +214,24 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
               </div>
               
               {/* Editor */}
-              <textarea
+              <div
                 ref={editorRef}
-                value={story.content}
-                onChange={(e) => setStory({ ...story, content: e.target.value })}
+                contentEditable
+                onInput={handleContentChange}
+                onFocus={(e) => {
+                  // Ensure LTR when focused
+                  e.target.style.direction = 'ltr';
+                  e.target.style.textAlign = 'left';
+                }}
                 data-testid="content-editor"
                 dir="ltr"
-                placeholder="Write your story here..."
-                className="min-h-[400px] w-full p-6 border-0 focus:outline-none resize-none bg-transparent font-serif text-base leading-relaxed"
-                style={{ textAlign: 'left', direction: 'ltr' }}
+                style={{ 
+                  textAlign: 'left', 
+                  direction: 'ltr',
+                  unicodeBidi: 'bidi-override'
+                }}
+                className="min-h-[400px] p-6 focus:outline-none prose prose-amber max-w-none"
+                suppressContentEditableWarning
               />
             </div>
           </div>
