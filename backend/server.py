@@ -72,6 +72,7 @@ class Story(BaseModel):
     title: str
     content: str
     photos: List[str] = []
+    is_draft: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class StoryCreate(BaseModel):
