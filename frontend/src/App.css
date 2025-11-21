@@ -112,22 +112,50 @@ body {
 [data-testid="content-editor"] {
   direction: ltr !important;
   text-align: left !important;
-  unicode-bidi: bidi-override !important;
-  writing-mode: lr-tb !important;
 }
 
-[data-testid="content-editor"] *,
-[data-testid="content-editor"] p,
-[data-testid="content-editor"] div,
-[data-testid="content-editor"] span {
+[data-testid="content-editor"] * {
   direction: ltr !important;
-  text-align: left !important;
-  unicode-bidi: bidi-override !important;
 }
 
-/* Ensure contentEditable cursor behavior */
+/* Ensure contentEditable shows formatting */
+[data-testid="content-editor"] strong {
+  font-weight: bold;
+}
+
+[data-testid="content-editor"] em {
+  font-style: italic;
+}
+
+[data-testid="content-editor"] u {
+  text-decoration: underline;
+}
+
+[data-testid="content-editor"] h1,
+[data-testid="content-editor"] h2,
+[data-testid="content-editor"] h3 {
+  font-weight: bold;
+  margin: 0.5em 0;
+}
+
+[data-testid="content-editor"] h2 {
+  font-size: 1.5em;
+}
+
+[data-testid="content-editor"] h3 {
+  font-size: 1.2em;
+}
+
+[data-testid="content-editor"] ul,
+[data-testid="content-editor"] ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+/* Placeholder text */
 [data-testid="content-editor"]:empty:before {
   content: "Write your story here...";
   color: #9ca3af;
   font-style: italic;
+  pointer-events: none;
 }
