@@ -223,9 +223,12 @@ async def get_stories(current_user: dict = Depends(get_current_user)):
         else:
             friend_ids.add(friendship['from_user_id'])
     
-    # Get stories from friends
+    # Get published stories from friends (not drafts)
     stories = await db.stories.find(
-        {"user_id": {"$in": list(friend_ids)}},
+        {
+            "user_id": {"$in": list(friend_ids)},
+            "is_draft": {"$ne": True}  # Exclude drafts from feed
+        },
         {"_id": 0}
     ).sort("created_at", -1).to_list(1000)
     
