@@ -327,13 +327,22 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
 
           <div className="flex gap-3 pt-4">
             <Button
-              onClick={handleSave}
+              onClick={() => handleSave(false)}
               data-testid="save-story-btn"
               className="flex-1 bg-amber-700 hover:bg-amber-800 text-white font-semibold py-6 rounded-xl"
               disabled={saving}
             >
               <Save className="w-4 h-4 mr-2" />
               {saving ? 'Saving...' : story.id ? 'Update Story' : 'Publish Story'}
+            </Button>
+            <Button
+              onClick={() => handleSave(true)}
+              variant="outline"
+              className="px-8"
+              disabled={saving}
+              data-testid="save-draft-btn"
+            >
+              Save Draft
             </Button>
             <Button
               onClick={onClose}
