@@ -262,7 +262,8 @@ async def update_story(story_id: str, story_data: StoryCreate, current_user: dic
     update_data = {
         "title": story_data.title,
         "content": story_data.content,
-        "photos": story_data.photos
+        "photos": story_data.photos,
+        "is_draft": story_data.is_draft
     }
     
     await db.stories.update_one(
