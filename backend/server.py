@@ -196,7 +196,8 @@ async def create_story(story_data: StoryCreate, current_user: dict = Depends(get
         username=current_user['username'],
         title=story_data.title,
         content=story_data.content,
-        photos=story_data.photos
+        photos=story_data.photos,
+        is_draft=story_data.is_draft
     )
     
     story_dict = story_obj.model_dump()
