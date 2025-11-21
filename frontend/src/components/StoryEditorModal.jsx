@@ -23,25 +23,66 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   }, [initialStory]);
 
   useEffect(() => {
-    // Set content when editor opens and ensure LTR
+    // Set content when editor opens
     if (editorRef.current && open) {
       editorRef.current.innerHTML = story.content || '';
-      // Force LTR direction
-      editorRef.current.style.direction = 'ltr';
-      editorRef.current.style.textAlign = 'left';
     }
-  }, [open]);
+  }, [open, story.id]);
 
   const execCommand = (command, value = null) => {
-    document.execCommand(command, false, value);
+    // Ensure focus first
     editorRef.current?.focus();
-    // Update story content after command
-    handleContentChange();
+    
+    // Execute the command
+    const success = document.execCommand(command, false, value);
+    
+    // Force update content after command
+    setTimeout(() => {
+      handleContentChange();
+    }, 10);
+    
+    return success;
   };
 
   const handleContentChange = () => {
     if (editorRef.current) {
-      setStory({ ...story, content: editorRef.current.innerHTML });
+      const content = editorRef.current.innerHTML;
+      setStory({ ...story, content });
+    }
+  };
+
+  // Auto-save draft every 3 seconds
+  useEffect(() => {
+    if (!story.title && !story.content) return;
+    
+    const autoSave = setTimeout(() => {
+      saveDraft();
+    }, 3000);
+    
+    return () => clearTimeout(autoSave);
+  }, [story.title, story.content]);
+
+  const saveDraft = async () => {
+    if (!story.title.trim() && !story.content.trim()) return;
+    
+    try {
+      const draftData = {
+        title: story.title || 'Untitled Draft',
+        content: story.content,
+        photos: story.photos,
+        is_draft: true
+      };
+      
+      if (story.id) {
+        // Update existing draft
+        await authAxios.put(`/stories/${story.id}`, draftData);
+      } else {
+        // Create new draft
+        const res = await authAxios.post('/stories', draftData);
+        setStory({ ...story, id: res.data.id });
+      }
+    } catch (error) {
+      console.log('Auto-save failed:', error);
     }
   };
 
