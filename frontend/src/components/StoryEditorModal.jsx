@@ -257,22 +257,20 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
               {/* Editor */}
               <div
                 ref={editorRef}
-                contentEditable
+                contentEditable={true}
                 onInput={handleContentChange}
-                onFocus={(e) => {
-                  // Ensure LTR when focused
-                  e.target.style.direction = 'ltr';
-                  e.target.style.textAlign = 'left';
+                onPaste={(e) => {
+                  // Handle paste to maintain formatting
+                  setTimeout(() => handleContentChange(), 10);
                 }}
                 data-testid="content-editor"
-                dir="ltr"
+                className="min-h-[400px] p-6 focus:outline-none prose prose-amber max-w-none bg-white border-0"
                 style={{ 
-                  textAlign: 'left', 
                   direction: 'ltr',
-                  unicodeBidi: 'bidi-override'
+                  textAlign: 'left',
+                  outline: 'none'
                 }}
-                className="min-h-[400px] p-6 focus:outline-none prose prose-amber max-w-none"
-                suppressContentEditableWarning
+                suppressContentEditableWarning={true}
               />
             </div>
           </div>
