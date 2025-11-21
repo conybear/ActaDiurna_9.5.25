@@ -127,21 +127,21 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise HTTPException(status_code=401, detail="Invalid token")
 
 async def send_email(to_email: str, subject: str, content: str):
-    """Send email using SendGrid (optional)"""
-    sendgrid_key = os.environ.get('SENDGRID_API_KEY')
-    if not sendgrid_key:
-        logging.warning("SendGrid API key not configured - email not sent")
+    """Send email using Resend"""
+    resend_key = os.environ.get('RESEND_API_KEY')
+    if not resend_key:
+        logging.warning("Resend API key not configured - email not sent")
         return
     
     try:
-        message = Mail(
-            from_email='noreply@actadiurna.com',
-            to_emails=to_email,
-            subject=subject,
-            html_content=content
-        )
-        sg = SendGridAPIClient(sendgrid_key)
-        sg.send(message)
+        resend.api_key = resend_key
+        resend.Emails.send({
+            "from": "noreply@resend.dev",  # Use resend.dev domain for testing
+            "to": [to_email],
+            "subject": subject,
+            "html": content,
+        })
+        logging.info(f"Email sent successfully to {to_email}")
     except Exception as e:
         logging.error(f"Failed to send email: {e}")
 
