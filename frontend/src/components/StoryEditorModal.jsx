@@ -174,7 +174,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   type="button"
                   size="sm"
                   variant="ghost"
-                  onClick={() => execCommand('h2')}
+                  onClick={() => execCommand('formatBlock', '<h2>')}
                   className="hover:bg-amber-200"
                   data-testid="heading1-btn"
                 >
@@ -184,7 +184,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   type="button"
                   size="sm"
                   variant="ghost"
-                  onClick={() => execCommand('h3')}
+                  onClick={() => execCommand('formatBlock', '<h3>')}
                   className="hover:bg-amber-200"
                   data-testid="heading2-btn"
                 >
@@ -195,7 +195,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   type="button"
                   size="sm"
                   variant="ghost"
-                  onClick={() => execCommand('ul')}
+                  onClick={() => execCommand('insertUnorderedList')}
                   className="hover:bg-amber-200"
                   data-testid="bullet-list-btn"
                 >
@@ -205,7 +205,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   type="button"
                   size="sm"
                   variant="ghost"
-                  onClick={() => execCommand('ol')}
+                  onClick={() => execCommand('insertOrderedList')}
                   className="hover:bg-amber-200"
                   data-testid="numbered-list-btn"
                 >
