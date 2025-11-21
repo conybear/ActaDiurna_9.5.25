@@ -112,10 +112,22 @@ body {
 [data-testid="content-editor"] {
   direction: ltr !important;
   text-align: left !important;
-  unicode-bidi: embed !important;
+  unicode-bidi: bidi-override !important;
+  writing-mode: lr-tb !important;
 }
 
-[data-testid="content-editor"] * {
+[data-testid="content-editor"] *,
+[data-testid="content-editor"] p,
+[data-testid="content-editor"] div,
+[data-testid="content-editor"] span {
   direction: ltr !important;
   text-align: left !important;
+  unicode-bidi: bidi-override !important;
+}
+
+/* Ensure contentEditable cursor behavior */
+[data-testid="content-editor"]:empty:before {
+  content: "Write your story here...";
+  color: #9ca3af;
+  font-style: italic;
 }
