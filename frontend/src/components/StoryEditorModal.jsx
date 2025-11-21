@@ -22,50 +22,26 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
     }
   }, [initialStory]);
 
-  const execCommand = (format) => {
-    if (!editorRef.current) return;
-    
-    const textarea = editorRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
-    
-    if (selectedText) {
-      let formattedText = '';
-      switch (format) {
-        case 'bold':
-          formattedText = `<strong>${selectedText}</strong>`;
-          break;
-        case 'italic':
-          formattedText = `<em>${selectedText}</em>`;
-          break;
-        case 'underline':
-          formattedText = `<u>${selectedText}</u>`;
-          break;
-        case 'h2':
-          formattedText = `<h2>${selectedText}</h2>`;
-          break;
-        case 'h3':
-          formattedText = `<h3>${selectedText}</h3>`;
-          break;
-        case 'ul':
-          formattedText = `<ul><li>${selectedText}</li></ul>`;
-          break;
-        case 'ol':
-          formattedText = `<ol><li>${selectedText}</li></ol>`;
-          break;
-        default:
-          formattedText = selectedText;
-      }
-      
-      const newValue = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
-      setStory({ ...story, content: newValue });
-      
-      // Reset focus
-      setTimeout(() => {
-        textarea.focus();
-        textarea.setSelectionRange(start + formattedText.length, start + formattedText.length);
-      }, 0);
+  useEffect(() => {
+    // Set content when editor opens and ensure LTR
+    if (editorRef.current && open) {
+      editorRef.current.innerHTML = story.content || '';
+      // Force LTR direction
+      editorRef.current.style.direction = 'ltr';
+      editorRef.current.style.textAlign = 'left';
+    }
+  }, [open]);
+
+  const execCommand = (command, value = null) => {
+    document.execCommand(command, false, value);
+    editorRef.current?.focus();
+    // Update story content after command
+    handleContentChange();
+  };
+
+  const handleContentChange = () => {
+    if (editorRef.current) {
+      setStory({ ...story, content: editorRef.current.innerHTML });
     }
   };
 
