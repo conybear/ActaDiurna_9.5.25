@@ -114,7 +114,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
     });
   };
 
-  const handleSave = async () => {
+  const handleSave = async (isDraft = false) => {
     if (!story.title.trim() || !story.content.trim()) {
       toast.error('Please fill in title and content');
       return;
@@ -122,29 +122,34 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
 
     setSaving(true);
     try {
+      const storyData = {
+        title: story.title,
+        content: story.content,
+        photos: story.photos,
+        is_draft: isDraft
+      };
+
       if (story.id) {
         // Update existing story
-        await authAxios.put(`/stories/${story.id}`, {
-          title: story.title,
-          content: story.content,
-          photos: story.photos
-        });
-        toast.success('Story updated!');
+        await authAxios.put(`/stories/${story.id}`, storyData);
+        toast.success(isDraft ? 'Draft saved!' : 'Story updated!');
       } else {
         // Create new story
-        await authAxios.post('/stories', {
-          title: story.title,
-          content: story.content,
-          photos: story.photos
-        });
-        toast.success('Story published!');
+        const res = await authAxios.post('/stories', storyData);
+        if (!isDraft) {
+          toast.success('Story published!');
+        }
+        setStory({ ...story, id: res.data.id });
       }
-      onSuccess();
-      onClose();
-      // Reset form
-      setStory({ id: null, title: '', content: '', photos: [] });
-      if (editorRef.current) {
-        editorRef.current.innerHTML = '';
+      
+      if (!isDraft) {
+        onSuccess();
+        onClose();
+        // Reset form only if publishing
+        setStory({ id: null, title: '', content: '', photos: [] });
+        if (editorRef.current) {
+          editorRef.current.innerHTML = '';
+        }
       }
     } catch (error) {
       toast.error('Failed to save story');
