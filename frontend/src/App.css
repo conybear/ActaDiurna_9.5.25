@@ -108,15 +108,6 @@ body {
   font-size: 0.9em;
 }
 
-/* Simple LTR class */
-.ltr-text {
-  direction: ltr !important;
-  text-align: left !important;
-  font-family: 'Merriweather', Georgia, serif;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
 /* Force LTR text direction in content editor */
 [data-testid="content-editor"] {
   direction: ltr !important;
