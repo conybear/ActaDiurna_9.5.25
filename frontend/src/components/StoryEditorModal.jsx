@@ -22,9 +22,21 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
     }
   }, [initialStory]);
 
+  // Separate effect to handle setting editor content when opening an existing story
+  useEffect(() => {
+    if (open && initialStory && editorRef.current) {
+      setTimeout(() => {
+        if (editorRef.current && initialStory.content) {
+          editorRef.current.innerHTML = initialStory.content;
+          updateToolbarState();
+        }
+      }, 200); // Slightly longer delay to ensure editor is ready
+    }
+  }, [open, initialStory]);
+
   useEffect(() => {
     // Set content when editor opens or story changes
-    if (editorRef.current && open && story.content) {
+    if (editorRef.current && open && story.content && !initialStory) {
       editorRef.current.innerHTML = story.content;
       // Ensure focus and proper setup
       setTimeout(() => {
