@@ -137,15 +137,18 @@ async def send_email(to_email: str, subject: str, content: str):
     
     try:
         resend.api_key = resend_key
+        
+        # For testing, we'll send all emails to the verified account
+        # In production, you'd want to verify your domain
         params = {
-            "from": "Acta Diurna <onboarding@resend.dev>",  # Use verified sender
-            "to": [to_email],
-            "subject": subject,
-            "html": content,
+            "from": "Acta Diurna <onboarding@resend.dev>",
+            "to": ["joel.conybear@gmail.com"],  # Use verified email for now
+            "subject": f"[FOR: {to_email}] {subject}",  # Include original recipient in subject
+            "html": f"<p><strong>Original recipient:</strong> {to_email}</p>{content}",
         }
         
         response = resend.Emails.send(params)
-        logging.info(f"Email sent successfully to {to_email}: {response}")
+        logging.info(f"Email sent successfully (redirected to verified address): {response}")
         return True
     except Exception as e:
         logging.error(f"Failed to send email to {to_email}: {e}")
