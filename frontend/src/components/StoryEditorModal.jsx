@@ -29,9 +29,17 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   useEffect(() => {
     // Set content when editor opens
     if (editorRef.current && open) {
-      editorRef.current.innerHTML = story.content || '';
+      if (story.content) {
+        editorRef.current.innerHTML = story.content;
+      }
+      // Ensure focus and proper setup
+      setTimeout(() => {
+        if (editorRef.current) {
+          editorRef.current.focus();
+        }
+      }, 100);
     }
-  }, [open, story.id]);
+  }, [open]);
 
   const execCommand = (command, value = null) => {
     // Ensure focus first
