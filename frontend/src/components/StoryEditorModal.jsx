@@ -22,15 +22,15 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
     }
   }, [initialStory]);
 
-  // Handle editor content and direction when opening
   useEffect(() => {
+    // Set content when editor opens
     if (editorRef.current && open) {
-      // Always set text direction first
+      // Always ensure LTR text direction
       editorRef.current.style.direction = 'ltr';
       editorRef.current.style.textAlign = 'left';
       editorRef.current.style.unicodeBidi = 'bidi-override';
       
-      // Set content if we have a story to edit
+      // Load existing content
       if (story.content) {
         editorRef.current.innerHTML = story.content;
       }
@@ -42,7 +42,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
         }
       }, 100);
     }
-  }, [open, story.id]); // Use story.id instead of story.content
+  }, [open, story.content]); // Back to story.content dependency
 
   const execCommand = (command, value = null) => {
     if (!editorRef.current) return;
