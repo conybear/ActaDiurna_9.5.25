@@ -298,6 +298,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                 }}
                 data-testid="content-editor"
                 tabIndex={2}
+                dir="ltr"
                 className="min-h-[400px] p-6 focus:outline-none bg-white border-0"
                 style={{ 
                   direction: 'ltr',
@@ -305,7 +306,8 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   outline: 'none',
                   fontFamily: 'Merriweather, Georgia, serif',
                   fontSize: '16px',
-                  lineHeight: '1.6'
+                  lineHeight: '1.6',
+                  unicodeBidi: 'bidi-override'
                 }}
                 suppressContentEditableWarning={true}
               />
