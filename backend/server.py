@@ -220,14 +220,15 @@ async def get_stories(current_user: dict = Depends(get_current_user)):
         ]
     }).to_list(1000)
     
-    friend_ids = set([current_user['id']])  # Include own stories
+    # Get only friend IDs, NOT including current user
+    friend_ids = set()
     for friendship in friendships:
         if friendship['from_user_id'] == current_user['id']:
             friend_ids.add(friendship['to_user_id'])
         else:
             friend_ids.add(friendship['from_user_id'])
     
-    # Get published stories from friends (not drafts)
+    # Get published stories ONLY from friends (exclude user's own stories)
     stories = await db.stories.find(
         {
             "user_id": {"$in": list(friend_ids)},
