@@ -42,18 +42,55 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   }, [open]);
 
   const execCommand = (command, value = null) => {
-    // Ensure focus first
-    editorRef.current?.focus();
+    if (!editorRef.current) return;
     
-    // Execute the command
-    const success = document.execCommand(command, false, value);
+    editorRef.current.focus();
+    
+    // Handle different formatting commands manually for better reliability
+    if (command === 'insertUnorderedList') {
+      insertList('ul');
+    } else if (command === 'insertOrderedList') {
+      insertList('ol');
+    } else {
+      // Use execCommand for simple formatting
+      document.execCommand(command, false, value);
+    }
     
     // Force update content after command
     setTimeout(() => {
       handleContentChange();
     }, 10);
+  };
+
+  const insertList = (listType) => {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
     
-    return success;
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString() || 'List item';
+    
+    // Create the list HTML
+    const listHTML = listType === 'ul' 
+      ? `<ul><li>${selectedText}</li></ul>`
+      : `<ol><li>${selectedText}</li></ol>`;
+    
+    // Delete selected content and insert list
+    range.deleteContents();
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = listHTML;
+    const listElement = tempDiv.firstChild;
+    
+    range.insertNode(listElement);
+    
+    // Set cursor position inside the list item
+    const listItem = listElement.querySelector('li');
+    if (listItem) {
+      selection.removeAllRanges();
+      const newRange = document.createRange();
+      newRange.selectNodeContents(listItem);
+      newRange.collapse(false);
+      selection.addRange(newRange);
+    }
   };
 
   const handleContentChange = () => {
