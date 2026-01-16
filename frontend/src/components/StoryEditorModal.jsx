@@ -92,7 +92,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
     }, 3000);
     
     return () => clearTimeout(autoSave);
-  }, [story.title, story.content]);
+  }, [story.title, story.content, story.photos]); // Add photos to dependencies
 
   const saveDraft = async () => {
     if (!story.title.trim() && !story.content.trim()) return;
