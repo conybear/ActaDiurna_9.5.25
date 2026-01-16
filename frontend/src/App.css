@@ -146,10 +146,36 @@ body {
   font-size: 1.2em;
 }
 
-[data-testid="content-editor"] ul,
+[data-testid="content-editor"] ul {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+  list-style-type: disc !important;
+}
+
 [data-testid="content-editor"] ol {
   margin: 0.5em 0;
   padding-left: 1.5em;
+  list-style-type: decimal !important;
+}
+
+[data-testid="content-editor"] li {
+  display: list-item !important;
+  margin: 0.25em 0;
+}
+
+/* Ensure bullets show in published stories too */
+.prose ul {
+  list-style-type: disc !important;
+  padding-left: 1.5em !important;
+}
+
+.prose ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5em !important;
+}
+
+.prose li {
+  display: list-item !important;
 }
 
 /* Placeholder text */
