@@ -168,7 +168,9 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
       } else {
         // Create new story
         const res = await authAxios.post('/stories', storyData);
-        if (!isDraft) {
+        if (isDraft) {
+          toast.success('Draft saved!');
+        } else {
           toast.success('Story published!');
         }
         setStory({ ...story, id: res.data.id });
