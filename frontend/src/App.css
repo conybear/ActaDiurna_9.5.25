@@ -112,10 +112,14 @@ body {
 [data-testid="content-editor"] {
   direction: ltr !important;
   text-align: left !important;
+  unicode-bidi: bidi-override !important;
+  writing-mode: horizontal-tb !important;
 }
 
 [data-testid="content-editor"] * {
   direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: bidi-override !important;
 }
 
 /* Ensure contentEditable shows formatting */
