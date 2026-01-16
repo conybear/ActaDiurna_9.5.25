@@ -22,31 +22,27 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
     }
   }, [initialStory]);
 
-  // Separate effect to handle setting editor content when opening an existing story
+  // Handle editor content and direction when opening
   useEffect(() => {
-    if (open && initialStory && editorRef.current) {
-      setTimeout(() => {
-        if (editorRef.current && initialStory.content) {
-          editorRef.current.innerHTML = initialStory.content;
-          updateToolbarState();
-        }
-      }, 200); // Slightly longer delay to ensure editor is ready
-    }
-  }, [open, initialStory]);
-
-  useEffect(() => {
-    // Set content when editor opens or story changes
-    if (editorRef.current && open && story.content && !initialStory) {
-      editorRef.current.innerHTML = story.content;
-      // Ensure focus and proper setup
+    if (editorRef.current && open) {
+      // Always set text direction first
+      editorRef.current.style.direction = 'ltr';
+      editorRef.current.style.textAlign = 'left';
+      editorRef.current.style.unicodeBidi = 'bidi-override';
+      
+      // Set content if we have a story to edit
+      if (story.content) {
+        editorRef.current.innerHTML = story.content;
+      }
+      
       setTimeout(() => {
         if (editorRef.current) {
           editorRef.current.focus();
-          updateToolbarState(); // Initialize toolbar state
+          updateToolbarState();
         }
       }, 100);
     }
-  }, [open, story.content]); // Add story.content to dependencies
+  }, [open, story.id]); // Use story.id instead of story.content
 
   const execCommand = (command, value = null) => {
     if (!editorRef.current) return;
