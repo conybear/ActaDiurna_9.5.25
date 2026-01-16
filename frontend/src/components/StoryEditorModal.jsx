@@ -19,19 +19,13 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   useEffect(() => {
     if (initialStory) {
       setStory(initialStory);
-      // Set content in editor when story loads
-      if (editorRef.current && initialStory.content) {
-        editorRef.current.innerHTML = initialStory.content;
-      }
     }
   }, [initialStory]);
 
   useEffect(() => {
-    // Set content when editor opens
-    if (editorRef.current && open) {
-      if (story.content) {
-        editorRef.current.innerHTML = story.content;
-      }
+    // Set content when editor opens or story changes
+    if (editorRef.current && open && story.content) {
+      editorRef.current.innerHTML = story.content;
       // Ensure focus and proper setup
       setTimeout(() => {
         if (editorRef.current) {
@@ -40,7 +34,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
         }
       }, 100);
     }
-  }, [open]);
+  }, [open, story.content]); // Add story.content to dependencies
 
   const execCommand = (command, value = null) => {
     if (!editorRef.current) return;
