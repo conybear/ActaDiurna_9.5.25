@@ -204,6 +204,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   onClick={() => execCommand('bold')}
                   className="hover:bg-amber-200"
                   data-testid="bold-btn"
+                  tabIndex={-1}
                 >
                   <Bold className="w-4 h-4" />
                 </Button>
@@ -214,6 +215,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   onClick={() => execCommand('italic')}
                   className="hover:bg-amber-200"
                   data-testid="italic-btn"
+                  tabIndex={-1}
                 >
                   <Italic className="w-4 h-4" />
                 </Button>
@@ -224,6 +226,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   onClick={() => execCommand('underline')}
                   className="hover:bg-amber-200"
                   data-testid="underline-btn"
+                  tabIndex={-1}
                 >
                   <Underline className="w-4 h-4" />
                 </Button>
@@ -235,6 +238,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   onClick={() => execCommand('formatBlock', '<h2>')}
                   className="hover:bg-amber-200"
                   data-testid="heading1-btn"
+                  tabIndex={-1}
                 >
                   <Heading1 className="w-4 h-4" />
                 </Button>
@@ -245,6 +249,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   onClick={() => execCommand('formatBlock', '<h3>')}
                   className="hover:bg-amber-200"
                   data-testid="heading2-btn"
+                  tabIndex={-1}
                 >
                   <Heading2 className="w-4 h-4" />
                 </Button>
@@ -256,6 +261,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   onClick={() => execCommand('insertUnorderedList')}
                   className="hover:bg-amber-200"
                   data-testid="bullet-list-btn"
+                  tabIndex={-1}
                 >
                   <List className="w-4 h-4" />
                 </Button>
@@ -266,6 +272,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   onClick={() => execCommand('insertOrderedList')}
                   className="hover:bg-amber-200"
                   data-testid="numbered-list-btn"
+                  tabIndex={-1}
                 >
                   <ListOrdered className="w-4 h-4" />
                 </Button>
@@ -281,6 +288,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   setTimeout(() => handleContentChange(), 10);
                 }}
                 data-testid="content-editor"
+                tabIndex={2}
                 className="min-h-[400px] p-6 focus:outline-none prose prose-amber max-w-none bg-white border-0"
                 style={{ 
                   direction: 'ltr',
