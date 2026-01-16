@@ -189,6 +189,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
               value={story.title}
               onChange={(e) => setStory({ ...story, title: e.target.value })}
               className="border-amber-200 focus:border-amber-500 text-lg"
+              tabIndex={1}
             />
           </div>
 
