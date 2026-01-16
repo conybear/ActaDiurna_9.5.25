@@ -19,6 +19,10 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   useEffect(() => {
     if (initialStory) {
       setStory(initialStory);
+      // Set content in editor when story loads
+      if (editorRef.current && initialStory.content) {
+        editorRef.current.innerHTML = initialStory.content;
+      }
     }
   }, [initialStory]);
 
