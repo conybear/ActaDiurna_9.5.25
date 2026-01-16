@@ -120,62 +120,102 @@ body {
 
 /* Ensure contentEditable shows formatting */
 [data-testid="content-editor"] strong {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 [data-testid="content-editor"] em {
-  font-style: italic;
+  font-style: italic !important;
 }
 
 [data-testid="content-editor"] u {
-  text-decoration: underline;
+  text-decoration: underline !important;
 }
 
 [data-testid="content-editor"] h1,
 [data-testid="content-editor"] h2,
 [data-testid="content-editor"] h3 {
-  font-weight: bold;
-  margin: 0.5em 0;
+  font-weight: bold !important;
+  margin: 0.5em 0 !important;
 }
 
 [data-testid="content-editor"] h2 {
-  font-size: 1.5em;
+  font-size: 1.5em !important;
 }
 
 [data-testid="content-editor"] h3 {
-  font-size: 1.2em;
+  font-size: 1.2em !important;
 }
 
+/* Critical: Force list styles to display */
 [data-testid="content-editor"] ul {
-  margin: 0.5em 0;
-  padding-left: 1.5em;
+  margin: 0.5em 0 !important;
+  padding-left: 2em !important;
   list-style-type: disc !important;
+  list-style-position: outside !important;
 }
 
 [data-testid="content-editor"] ol {
-  margin: 0.5em 0;
-  padding-left: 1.5em;
+  margin: 0.5em 0 !important;
+  padding-left: 2em !important;
   list-style-type: decimal !important;
+  list-style-position: outside !important;
 }
 
 [data-testid="content-editor"] li {
   display: list-item !important;
-  margin: 0.25em 0;
+  margin: 0.25em 0 !important;
+  list-style: inherit !important;
+}
+
+/* Override any conflicting prose styles */
+[data-testid="content-editor"].prose ul {
+  list-style-type: disc !important;
+  padding-left: 2em !important;
+}
+
+[data-testid="content-editor"].prose ol {
+  list-style-type: decimal !important;
+  padding-left: 2em !important;
+}
+
+[data-testid="content-editor"].prose li {
+  display: list-item !important;
+  list-style: inherit !important;
 }
 
 /* Ensure bullets show in published stories too */
 .prose ul {
   list-style-type: disc !important;
-  padding-left: 1.5em !important;
+  padding-left: 2em !important;
+  margin: 1em 0 !important;
 }
 
 .prose ol {
   list-style-type: decimal !important;
-  padding-left: 1.5em !important;
+  padding-left: 2em !important;
+  margin: 1em 0 !important;
 }
 
 .prose li {
   display: list-item !important;
+  list-style: inherit !important;
+  margin: 0.25em 0 !important;
+}
+
+/* Additional specificity for story display */
+[data-testid*="story"] ul {
+  list-style-type: disc !important;
+  padding-left: 2em !important;
+}
+
+[data-testid*="story"] ol {
+  list-style-type: decimal !important;
+  padding-left: 2em !important;
+}
+
+[data-testid*="story"] li {
+  display: list-item !important;
+  list-style: inherit !important;
 }
 
 /* Placeholder text */
