@@ -25,19 +25,18 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   useEffect(() => {
     // Set content when editor opens
     if (editorRef.current && open) {
-      // Load existing content
       if (story.content) {
         editorRef.current.innerHTML = story.content;
       }
-      
+      // Ensure focus and proper setup
       setTimeout(() => {
         if (editorRef.current) {
           editorRef.current.focus();
-          updateToolbarState();
+          updateToolbarState(); // Initialize toolbar state
         }
       }, 100);
     }
-  }, [open, story.content]);
+  }, [open]);
 
   const execCommand = (command, value = null) => {
     if (!editorRef.current) return;
