@@ -281,6 +281,8 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                 ref={editorRef}
                 contentEditable={true}
                 onInput={handleContentChange}
+                onMouseUp={handleSelectionChange}
+                onKeyUp={handleSelectionChange}
                 onPaste={(e) => {
                   // Handle paste to maintain formatting
                   setTimeout(() => handleContentChange(), 10);
