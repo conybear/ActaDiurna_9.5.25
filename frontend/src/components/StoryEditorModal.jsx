@@ -223,7 +223,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   size="sm"
                   variant="ghost"
                   onClick={() => execCommand('bold')}
-                  className="hover:bg-amber-200"
+                  className={`hover:bg-amber-200 ${toolbarState.bold ? 'bg-amber-300 text-amber-900' : ''}`}
                   data-testid="bold-btn"
                   tabIndex={-1}
                 >
@@ -234,7 +234,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   size="sm"
                   variant="ghost"
                   onClick={() => execCommand('italic')}
-                  className="hover:bg-amber-200"
+                  className={`hover:bg-amber-200 ${toolbarState.italic ? 'bg-amber-300 text-amber-900' : ''}`}
                   data-testid="italic-btn"
                   tabIndex={-1}
                 >
@@ -245,7 +245,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   size="sm"
                   variant="ghost"
                   onClick={() => execCommand('underline')}
-                  className="hover:bg-amber-200"
+                  className={`hover:bg-amber-200 ${toolbarState.underline ? 'bg-amber-300 text-amber-900' : ''}`}
                   data-testid="underline-btn"
                   tabIndex={-1}
                 >
@@ -273,29 +273,6 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   tabIndex={-1}
                 >
                   <Heading2 className="w-4 h-4" />
-                </Button>
-                <Separator orientation="vertical" className="h-8" />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => execCommand('insertUnorderedList')}
-                  className="hover:bg-amber-200"
-                  data-testid="bullet-list-btn"
-                  tabIndex={-1}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => execCommand('insertOrderedList')}
-                  className="hover:bg-amber-200"
-                  data-testid="numbered-list-btn"
-                  tabIndex={-1}
-                >
-                  <ListOrdered className="w-4 h-4" />
                 </Button>
               </div>
               
