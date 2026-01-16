@@ -106,16 +106,20 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
         is_draft: true
       };
       
+      console.log('Saving draft:', draftData); // Debug log
+      
       if (story.id) {
         // Update existing draft
         await authAxios.put(`/stories/${story.id}`, draftData);
+        console.log('Draft updated successfully'); // Debug log
       } else {
         // Create new draft
         const res = await authAxios.post('/stories', draftData);
-        setStory({ ...story, id: res.data.id });
+        console.log('Draft created successfully:', res.data); // Debug log
+        setStory(prev => ({ ...prev, id: res.data.id }));
       }
     } catch (error) {
-      console.log('Auto-save failed:', error);
+      console.error('Auto-save failed:', error);
     }
   };
 
