@@ -133,19 +133,23 @@ async def send_email(to_email: str, subject: str, content: str):
     resend_key = os.environ.get('RESEND_API_KEY')
     if not resend_key:
         logging.warning("Resend API key not configured - email not sent")
-        return
+        return False
     
     try:
         resend.api_key = resend_key
-        resend.Emails.send({
-            "from": "noreply@resend.dev",  # Use resend.dev domain for testing
+        params = {
+            "from": "Acta Diurna <onboarding@resend.dev>",  # Use verified sender
             "to": [to_email],
             "subject": subject,
             "html": content,
-        })
-        logging.info(f"Email sent successfully to {to_email}")
+        }
+        
+        response = resend.Emails.send(params)
+        logging.info(f"Email sent successfully to {to_email}: {response}")
+        return True
     except Exception as e:
-        logging.error(f"Failed to send email: {e}")
+        logging.error(f"Failed to send email to {to_email}: {e}")
+        return False
 
 # Auth routes
 @api_router.post("/auth/register", response_model=Token)
