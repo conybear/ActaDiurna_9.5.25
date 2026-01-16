@@ -36,6 +36,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
       setTimeout(() => {
         if (editorRef.current) {
           editorRef.current.focus();
+          updateToolbarState(); // Initialize toolbar state
         }
       }, 100);
     }
