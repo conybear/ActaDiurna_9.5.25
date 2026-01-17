@@ -277,6 +277,9 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                   placeholder="Write your story here... Use **bold**, *italic*, __underline__ for formatting"
                   value={story.content}
                   onChange={(e) => setStory({ ...story, content: e.target.value })}
+                  onSelect={handleCursorChange}
+                  onKeyUp={handleCursorChange}
+                  onMouseUp={handleCursorChange}
                   rows={15}
                   className="border-amber-200 focus:border-amber-500 resize-none font-mono text-sm"
                 />
