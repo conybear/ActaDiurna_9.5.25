@@ -14,6 +14,11 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   );
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [activeFormats, setActiveFormats] = useState({
+    bold: false,
+    italic: false,
+    underline: false
+  });
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -23,6 +28,47 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
       setStory({ ...initialStory, content: markdownContent });
     }
   }, [initialStory]);
+
+  // Check which formats are active at cursor position
+  const updateActiveFormats = () => {
+    if (!textareaRef.current) return;
+    
+    const textarea = textareaRef.current;
+    const cursorPos = textarea.selectionStart;
+    const text = textarea.value;
+    
+    // Check if cursor is inside formatting
+    const beforeCursor = text.substring(0, cursorPos);
+    const afterCursor = text.substring(cursorPos);
+    
+    const formats = {
+      bold: false,
+      italic: false,
+      underline: false
+    };
+    
+    // Check for bold (**text**)
+    const boldOpenBefore = (beforeCursor.match(/\*\*/g) || []).length;
+    const boldOpenAfter = (afterCursor.match(/\*\*/g) || []).length;
+    formats.bold = boldOpenBefore % 2 === 1;
+    
+    // Check for italic (*text*) - but not bold
+    const italicBefore = beforeCursor.replace(/\*\*/g, '');
+    const italicAfter = afterCursor.replace(/\*\*/g, '');
+    const italicOpenBefore = (italicBefore.match(/\*/g) || []).length;
+    formats.italic = italicOpenBefore % 2 === 1;
+    
+    // Check for underline (__text__)
+    const underlineOpenBefore = (beforeCursor.match(/__/g) || []).length;
+    formats.underline = underlineOpenBefore % 2 === 1;
+    
+    setActiveFormats(formats);
+  };
+
+  // Handle cursor/selection changes
+  const handleCursorChange = () => {
+    updateActiveFormats();
+  };
 
   // Convert HTML to markdown for editing
   const htmlToMarkdown = (html) => {
