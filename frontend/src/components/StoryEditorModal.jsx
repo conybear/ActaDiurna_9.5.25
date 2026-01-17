@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { authAxios } from '@/App';
 import { toast } from 'sonner';
-import { Upload, X, Save } from 'lucide-react';
+import { Upload, X, Save, Bold, Italic, Underline } from 'lucide-react';
 
 const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => {
   const [story, setStory] = useState(
