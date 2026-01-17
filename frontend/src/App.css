@@ -108,23 +108,13 @@ body {
   font-size: 0.9em;
 }
 
-/* Force LTR text direction in content editor - AGGRESSIVE */
-[data-testid="content-editor"],
-[data-testid="content-editor"] *,
-div[contenteditable="true"] {
-  direction: ltr !important;
-  text-align: left !important;
-  unicode-bidi: normal !important;
+/* Placeholder text */
+[data-testid="content-editor"]:empty:before {
+  content: "Write your story here...";
+  color: #9ca3af;
+  font-style: italic;
+  pointer-events: none;
 }
-
-/* Prevent any RTL inheritance */
-[data-testid="content-editor"]::before,
-[data-testid="content-editor"]::after {
-  direction: ltr !important;
-  text-align: left !important;
-}
-
-/* Ensure contentEditable shows formatting */
 [data-testid="content-editor"] strong {
   font-weight: bold !important;
 }
