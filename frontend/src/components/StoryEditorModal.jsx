@@ -19,28 +19,31 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   useEffect(() => {
     if (initialStory) {
       setStory(initialStory);
-      // Set content in editor when story loads
-      if (editorRef.current && initialStory.content) {
-        editorRef.current.innerHTML = initialStory.content;
-      }
     }
   }, [initialStory]);
 
   useEffect(() => {
-    // Set content when editor opens
-    if (editorRef.current && open) {
-      if (story.content) {
-        editorRef.current.innerHTML = story.content;
-      }
+    // Set content when editor opens and we have an existing story
+    if (editorRef.current && open && story.content) {
+      editorRef.current.innerHTML = story.content;
       // Ensure focus and proper setup
       setTimeout(() => {
         if (editorRef.current) {
           editorRef.current.focus();
-          updateToolbarState(); // Initialize toolbar state
+          updateToolbarState();
+        }
+      }, 100);
+    } else if (editorRef.current && open && !story.content) {
+      // Clear editor for new stories
+      editorRef.current.innerHTML = '';
+      setTimeout(() => {
+        if (editorRef.current) {
+          editorRef.current.focus();
+          updateToolbarState();
         }
       }, 100);
     }
-  }, [open, story.id]);
+  }, [open, story.content, story.id]);
 
   const execCommand = (command, value = null) => {
     if (!editorRef.current) return;
