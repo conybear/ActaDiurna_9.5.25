@@ -17,33 +17,31 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   const editorRef = useRef(null);
 
   useEffect(() => {
+    console.log('initialStory changed:', initialStory); // Debug log
     if (initialStory) {
       setStory(initialStory);
     }
   }, [initialStory]);
 
   useEffect(() => {
-    // Set content when editor opens and we have an existing story
-    if (editorRef.current && open && story.content) {
-      editorRef.current.innerHTML = story.content;
-      // Ensure focus and proper setup
+    console.log('Editor effect - open:', open, 'story:', story); // Debug log
+    if (open && editorRef.current) {
+      // Always wait a bit for the modal to be fully rendered
       setTimeout(() => {
         if (editorRef.current) {
+          if (story.content) {
+            console.log('Setting content:', story.content); // Debug log
+            editorRef.current.innerHTML = story.content;
+          } else {
+            console.log('No content to set'); // Debug log
+            editorRef.current.innerHTML = '';
+          }
           editorRef.current.focus();
           updateToolbarState();
         }
-      }, 100);
-    } else if (editorRef.current && open && !story.content) {
-      // Clear editor for new stories
-      editorRef.current.innerHTML = '';
-      setTimeout(() => {
-        if (editorRef.current) {
-          editorRef.current.focus();
-          updateToolbarState();
-        }
-      }, 100);
+      }, 200); // Longer delay
     }
-  }, [open, story.content, story.id]);
+  }, [open, story]);
 
   const execCommand = (command, value = null) => {
     if (!editorRef.current) return;
