@@ -14,12 +14,51 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   );
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     if (initialStory) {
       setStory(initialStory);
     }
   }, [initialStory]);
+
+  const formatText = (formatType) => {
+    if (!textareaRef.current) return;
+    
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    
+    if (selectedText) {
+      let formattedText = '';
+      switch (formatType) {
+        case 'bold':
+          formattedText = `<strong>${selectedText}</strong>`;
+          break;
+        case 'italic':
+          formattedText = `<em>${selectedText}</em>`;
+          break;
+        case 'underline':
+          formattedText = `<u>${selectedText}</u>`;
+          break;
+        default:
+          return;
+      }
+      
+      const newContent = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+      setStory({ ...story, content: newContent });
+      
+      // Reset cursor position
+      setTimeout(() => {
+        textarea.focus();
+        const newPosition = start + formattedText.length;
+        textarea.setSelectionRange(newPosition, newPosition);
+      }, 0);
+    } else {
+      toast.info('Please select some text to format');
+    }
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
