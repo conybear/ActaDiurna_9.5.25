@@ -14,12 +14,82 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   );
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     if (initialStory) {
-      setStory(initialStory);
+      // Convert HTML back to markdown for editing
+      const markdownContent = htmlToMarkdown(initialStory.content);
+      setStory({ ...initialStory, content: markdownContent });
     }
   }, [initialStory]);
+
+  // Convert HTML to markdown for editing
+  const htmlToMarkdown = (html) => {
+    if (!html) return '';
+    return html
+      .replace(/<strong>(.*?)<\/strong>/g, '**$1**')
+      .replace(/<em>(.*?)<\/em>/g, '*$1*')
+      .replace(/<u>(.*?)<\/u>/g, '__$1__');
+  };
+
+  // Convert markdown to HTML for saving
+  const markdownToHtml = (markdown) => {
+    if (!markdown) return '';
+    return markdown
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/__(.*?)__/g, '<u>$1</u>');
+  };
+
+  const insertFormatting = (formatType) => {
+    if (!textareaRef.current) return;
+    
+    const textarea = textareaRef.current;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = textarea.value.substring(start, end);
+    
+    let formatChars = '';
+    switch (formatType) {
+      case 'bold':
+        formatChars = '**';
+        break;
+      case 'italic':
+        formatChars = '*';
+        break;
+      case 'underline':
+        formatChars = '__';
+        break;
+      default:
+        return;
+    }
+    
+    let newText;
+    if (selectedText) {
+      // Wrap selected text
+      newText = textarea.value.substring(0, start) + 
+                formatChars + selectedText + formatChars + 
+                textarea.value.substring(end);
+    } else {
+      // Insert formatting markers at cursor
+      newText = textarea.value.substring(0, start) + 
+                formatChars + formatChars + 
+                textarea.value.substring(end);
+    }
+    
+    setStory({ ...story, content: newText });
+    
+    // Reset cursor position
+    setTimeout(() => {
+      textarea.focus();
+      if (selectedText) {
+        textarea.setSelectionRange(start + formatChars.length, end + formatChars.length);
+      } else {
+        textarea.setSelectionRange(start + formatChars.length, start + formatChars.length);
+      }
+    }, 0);
+  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
