@@ -127,11 +127,14 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
 
     setSaving(true);
     try {
+      // Convert markdown to HTML before saving
+      const htmlContent = markdownToHtml(story.content);
+      
       if (story.id) {
         // Update existing story
         await authAxios.put(`/stories/${story.id}`, {
           title: story.title,
-          content: story.content,
+          content: htmlContent,
           photos: story.photos
         });
         toast.success('Story updated!');
@@ -139,7 +142,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
         // Create new story
         await authAxios.post('/stories', {
           title: story.title,
-          content: story.content,
+          content: htmlContent,
           photos: story.photos
         });
         toast.success('Story published!');
