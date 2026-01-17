@@ -235,7 +235,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                 size="sm"
                 variant="ghost"
                 onClick={() => insertFormatting('bold')}
-                className="hover:bg-amber-200"
+                className={`hover:bg-amber-200 ${activeFormats.bold ? 'bg-amber-300 text-amber-900 shadow-sm' : ''}`}
                 data-testid="bold-btn"
                 title="Bold (**text**)"
               >
@@ -246,7 +246,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                 size="sm"
                 variant="ghost"
                 onClick={() => insertFormatting('italic')}
-                className="hover:bg-amber-200"
+                className={`hover:bg-amber-200 ${activeFormats.italic ? 'bg-amber-300 text-amber-900 shadow-sm' : ''}`}
                 data-testid="italic-btn"
                 title="Italic (*text*)"
               >
@@ -257,7 +257,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                 size="sm"
                 variant="ghost"
                 onClick={() => insertFormatting('underline')}
-                className="hover:bg-amber-200"
+                className={`hover:bg-amber-200 ${activeFormats.underline ? 'bg-amber-300 text-amber-900 shadow-sm' : ''}`}
                 data-testid="underline-btn"
                 title="Underline (__text__)"
               >
