@@ -147,13 +147,53 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
 
           <div>
             <Label>Your Story</Label>
+            
+            {/* Formatting Toolbar */}
+            <div className="mb-2 p-2 bg-amber-50 border border-amber-200 rounded-t-lg flex gap-1">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => formatText('bold')}
+                className="hover:bg-amber-200"
+                data-testid="bold-btn"
+                title="Bold"
+              >
+                <Bold className="w-4 h-4" />
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => formatText('italic')}
+                className="hover:bg-amber-200"
+                data-testid="italic-btn"
+                title="Italic"
+              >
+                <Italic className="w-4 h-4" />
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => formatText('underline')}
+                className="hover:bg-amber-200"
+                data-testid="underline-btn"
+                title="Underline"
+              >
+                <Underline className="w-4 h-4" />
+              </Button>
+              <span className="text-xs text-amber-700 ml-2 self-center">Select text, then click to format</span>
+            </div>
+            
             <Textarea
+              ref={textareaRef}
               data-testid="story-content-input"
               placeholder="Write your story here..."
               value={story.content}
               onChange={(e) => setStory({ ...story, content: e.target.value })}
               rows={15}
-              className="border-amber-200 focus:border-amber-500 resize-none"
+              className="border-amber-200 focus:border-amber-500 resize-none rounded-t-none"
             />
           </div>
 
