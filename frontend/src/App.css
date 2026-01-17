@@ -108,13 +108,27 @@ body {
   font-size: 0.9em;
 }
 
-/* Placeholder text */
-[data-testid="content-editor"]:empty:before {
+/* Placeholder for contentEditable */
+[data-testid="story-content-input"]:empty:before {
   content: "Write your story here...";
   color: #9ca3af;
   font-style: italic;
   pointer-events: none;
 }
+
+/* Ensure formatting shows properly */
+[data-testid="story-content-input"] strong {
+  font-weight: bold;
+}
+
+[data-testid="story-content-input"] em {
+  font-style: italic;
+}
+
+[data-testid="story-content-input"] u {
+  text-decoration: underline;
+}
+
 [data-testid="content-editor"] strong {
   font-weight: bold !important;
 }
