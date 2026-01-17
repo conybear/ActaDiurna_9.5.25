@@ -108,8 +108,18 @@ body {
   font-size: 0.9em;
 }
 
-/* Force LTR text direction in content editor */
-[data-testid="content-editor"] {
+/* Force LTR text direction in content editor - AGGRESSIVE */
+[data-testid="content-editor"],
+[data-testid="content-editor"] *,
+div[contenteditable="true"] {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: normal !important;
+}
+
+/* Prevent any RTL inheritance */
+[data-testid="content-editor"]::before,
+[data-testid="content-editor"]::after {
   direction: ltr !important;
   text-align: left !important;
 }
