@@ -218,19 +218,32 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                 <Underline className="w-4 h-4" />
               </Button>
               <span className="text-xs text-amber-700 ml-2 self-center">
-                Use **bold**, *italic*, __underline__
+                Use **bold**, *italic*, __underline__ - formatting shows when published
               </span>
             </div>
             
-            <Textarea
-              ref={textareaRef}
-              data-testid="story-content-input"
-              placeholder="Write your story here... Use **bold**, *italic*, __underline__ for formatting"
-              value={story.content}
-              onChange={(e) => setStory({ ...story, content: e.target.value })}
-              rows={15}
-              className="border-amber-200 focus:border-amber-500 resize-none rounded-t-none font-mono"
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm text-gray-600 mb-1 block">Write (with markdown):</Label>
+                <Textarea
+                  ref={textareaRef}
+                  data-testid="story-content-input"
+                  placeholder="Write your story here... Use **bold**, *italic*, __underline__ for formatting"
+                  value={story.content}
+                  onChange={(e) => setStory({ ...story, content: e.target.value })}
+                  rows={15}
+                  className="border-amber-200 focus:border-amber-500 resize-none font-mono text-sm"
+                />
+              </div>
+              
+              <div>
+                <Label className="text-sm text-gray-600 mb-1 block">Preview (how it will look):</Label>
+                <div 
+                  className="min-h-[300px] p-4 border border-gray-300 rounded-lg bg-gray-50 overflow-y-auto prose prose-amber max-w-none"
+                  dangerouslySetInnerHTML={{ __html: markdownToHtml(story.content) || '<p class="text-gray-400 italic">Your formatted text will appear here...</p>' }}
+                />
+              </div>
+            </div>
           </div>
 
           <div>
