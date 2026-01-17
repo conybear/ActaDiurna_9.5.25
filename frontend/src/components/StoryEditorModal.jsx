@@ -170,14 +170,20 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
               <span className="text-xs text-amber-700 ml-2 self-center">Select text, then click to format</span>
             </div>
             
-            <Textarea
-              ref={textareaRef}
+            <div
+              ref={editorRef}
+              contentEditable={true}
+              onInput={handleContentChange}
               data-testid="story-content-input"
-              placeholder="Write your story here..."
-              value={story.content}
-              onChange={(e) => setStory({ ...story, content: e.target.value })}
-              rows={15}
-              className="border-amber-200 focus:border-amber-500 resize-none rounded-t-none"
+              className="min-h-[300px] p-4 border border-amber-200 focus:border-amber-500 rounded-b-lg focus:outline-none resize-none bg-white"
+              style={{ 
+                direction: 'ltr',
+                textAlign: 'left',
+                fontFamily: 'Merriweather, Georgia, serif',
+                fontSize: '16px',
+                lineHeight: '1.6'
+              }}
+              suppressContentEditableWarning={true}
             />
           </div>
 
