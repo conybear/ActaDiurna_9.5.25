@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { authAxios } from '@/App';
 import { toast } from 'sonner';
-import { Upload, X, Save, Bold, Italic, Underline } from 'lucide-react';
+import { Upload, X, Save } from 'lucide-react';
 
 const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => {
   const [story, setStory] = useState(
@@ -14,39 +14,12 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   );
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
-  const editorRef = useRef(null);
 
   useEffect(() => {
     if (initialStory) {
       setStory(initialStory);
     }
   }, [initialStory]);
-
-  // Separate effect to handle setting content in editor
-  useEffect(() => {
-    if (editorRef.current) {
-      // Set content whenever story.content changes
-      editorRef.current.innerHTML = story.content || '';
-    }
-  }, [story.content]);
-
-  const formatText = (formatType) => {
-    if (!editorRef.current) return;
-    
-    editorRef.current.focus();
-    
-    // Use document.execCommand for actual formatting
-    document.execCommand(formatType, false, null);
-    
-    // Update story content after formatting
-    setStory({ ...story, content: editorRef.current.innerHTML });
-  };
-
-  const handleContentChange = () => {
-    if (editorRef.current) {
-      setStory({ ...story, content: editorRef.current.innerHTML });
-    }
-  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -135,59 +108,13 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
 
           <div>
             <Label>Your Story</Label>
-            
-            {/* Formatting Toolbar */}
-            <div className="mb-2 p-2 bg-amber-50 border border-amber-200 rounded-t-lg flex gap-1">
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => formatText('bold')}
-                className="hover:bg-amber-200"
-                data-testid="bold-btn"
-                title="Bold"
-              >
-                <Bold className="w-4 h-4" />
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => formatText('italic')}
-                className="hover:bg-amber-200"
-                data-testid="italic-btn"
-                title="Italic"
-              >
-                <Italic className="w-4 h-4" />
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                onClick={() => formatText('underline')}
-                className="hover:bg-amber-200"
-                data-testid="underline-btn"
-                title="Underline"
-              >
-                <Underline className="w-4 h-4" />
-              </Button>
-              <span className="text-xs text-amber-700 ml-2 self-center">Select text, then click to format</span>
-            </div>
-            
-            <div
-              ref={editorRef}
-              contentEditable={true}
-              onInput={handleContentChange}
+            <Textarea
               data-testid="story-content-input"
-              className="min-h-[300px] p-4 border border-amber-200 focus:border-amber-500 rounded-b-lg focus:outline-none resize-none bg-white"
-              style={{ 
-                direction: 'ltr',
-                textAlign: 'left',
-                fontFamily: 'Merriweather, Georgia, serif',
-                fontSize: '16px',
-                lineHeight: '1.6'
-              }}
-              suppressContentEditableWarning={true}
+              placeholder="Write your story here..."
+              value={story.content}
+              onChange={(e) => setStory({ ...story, content: e.target.value })}
+              rows={15}
+              className="border-amber-200 focus:border-amber-500 resize-none"
             />
           </div>
 
