@@ -14,49 +14,33 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   );
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
-  const textareaRef = useRef(null);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     if (initialStory) {
       setStory(initialStory);
+      // Set content in the editor when loading an existing story
+      if (editorRef.current && initialStory.content) {
+        editorRef.current.innerHTML = initialStory.content;
+      }
     }
   }, [initialStory]);
 
   const formatText = (formatType) => {
-    if (!textareaRef.current) return;
+    if (!editorRef.current) return;
     
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
+    editorRef.current.focus();
     
-    if (selectedText) {
-      let formattedText = '';
-      switch (formatType) {
-        case 'bold':
-          formattedText = `<strong>${selectedText}</strong>`;
-          break;
-        case 'italic':
-          formattedText = `<em>${selectedText}</em>`;
-          break;
-        case 'underline':
-          formattedText = `<u>${selectedText}</u>`;
-          break;
-        default:
-          return;
-      }
-      
-      const newContent = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
-      setStory({ ...story, content: newContent });
-      
-      // Reset cursor position
-      setTimeout(() => {
-        textarea.focus();
-        const newPosition = start + formattedText.length;
-        textarea.setSelectionRange(newPosition, newPosition);
-      }, 0);
-    } else {
-      toast.info('Please select some text to format');
+    // Use document.execCommand for actual formatting
+    document.execCommand(formatType, false, null);
+    
+    // Update story content after formatting
+    setStory({ ...story, content: editorRef.current.innerHTML });
+  };
+
+  const handleContentChange = () => {
+    if (editorRef.current) {
+      setStory({ ...story, content: editorRef.current.innerHTML });
     }
   };
 
