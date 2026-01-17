@@ -3,10 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import { authAxios } from '@/App';
 import { toast } from 'sonner';
-import { Upload, X, Save, Bold, Italic, Underline, Heading1, Heading2 } from 'lucide-react';
+import { Upload, X, Save } from 'lucide-react';
 
 const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => {
   const [story, setStory] = useState(
@@ -14,115 +14,12 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   );
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
-  const editorRef = useRef(null);
 
   useEffect(() => {
-    console.log('initialStory changed:', initialStory); // Debug log
     if (initialStory) {
       setStory(initialStory);
     }
   }, [initialStory]);
-
-  useEffect(() => {
-    console.log('Editor effect - open:', open, 'story:', story); // Debug log
-    if (open && editorRef.current) {
-      // Always wait a bit for the modal to be fully rendered
-      setTimeout(() => {
-        if (editorRef.current) {
-          if (story.content) {
-            console.log('Setting content:', story.content); // Debug log
-            editorRef.current.innerHTML = story.content;
-          } else {
-            console.log('No content to set'); // Debug log
-            editorRef.current.innerHTML = '';
-          }
-          editorRef.current.focus();
-          updateToolbarState();
-        }
-      }, 200); // Longer delay
-    }
-  }, [open, story]);
-
-  const execCommand = (command, value = null) => {
-    if (!editorRef.current) return;
-    
-    editorRef.current.focus();
-    
-    // Use execCommand for simple formatting
-    document.execCommand(command, false, value);
-    
-    // Force update content after command
-    setTimeout(() => {
-      handleContentChange();
-      updateToolbarState(); // Update button active states
-    }, 10);
-  };
-
-  const [toolbarState, setToolbarState] = useState({
-    bold: false,
-    italic: false,
-    underline: false
-  });
-
-  const updateToolbarState = () => {
-    if (!editorRef.current) return;
-    
-    setToolbarState({
-      bold: document.queryCommandState('bold'),
-      italic: document.queryCommandState('italic'),
-      underline: document.queryCommandState('underline')
-    });
-  };
-
-  const handleContentChange = () => {
-    if (editorRef.current) {
-      setStory({ ...story, content: editorRef.current.innerHTML });
-    }
-  };
-
-  // Update toolbar state when selection changes
-  const handleSelectionChange = () => {
-    updateToolbarState();
-  };
-
-  // Auto-save draft every 3 seconds
-  useEffect(() => {
-    if (!story.title && !story.content) return;
-    
-    const autoSave = setTimeout(() => {
-      saveDraft();
-    }, 3000);
-    
-    return () => clearTimeout(autoSave);
-  }, [story.title, story.content, story.photos]); // Add photos to dependencies
-
-  const saveDraft = async () => {
-    if (!story.title.trim() && !story.content.trim()) return;
-    
-    try {
-      const draftData = {
-        title: story.title || 'Untitled Draft',
-        content: story.content,
-        photos: story.photos,
-        is_draft: true
-      };
-      
-      console.log('Saving draft:', draftData); // Debug log
-      
-      if (story.id) {
-        // Update existing draft
-        await authAxios.put(`/stories/${story.id}`, draftData);
-        console.log('Draft updated successfully'); // Debug log
-      } else {
-        // Create new draft
-        const res = await authAxios.post('/stories', draftData);
-        console.log('Draft created successfully:', res.data); // Debug log
-        setStory(prev => ({ ...prev, id: res.data.id }));
-      }
-    } catch (error) {
-      console.error('Auto-save failed:', error);
-    }
-  };
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -139,7 +36,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
       setStory({ ...story, photos: [...story.photos, res.data.url] });
       toast.success('Image uploaded!');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Image upload failed');
+      toast.error(error.response?.data?.detail || 'Image upload failed. Please add Cloudinary credentials.');
     } finally {
       setUploadingImage(false);
     }
@@ -152,7 +49,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
     });
   };
 
-  const handleSave = async (isDraft = false) => {
+  const handleSave = async () => {
     if (!story.title.trim() || !story.content.trim()) {
       toast.error('Please fill in title and content');
       return;
@@ -160,37 +57,26 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
 
     setSaving(true);
     try {
-      const storyData = {
-        title: story.title,
-        content: story.content,
-        photos: story.photos,
-        is_draft: isDraft
-      };
-
       if (story.id) {
         // Update existing story
-        await authAxios.put(`/stories/${story.id}`, storyData);
-        toast.success(isDraft ? 'Draft saved!' : 'Story updated!');
+        await authAxios.put(`/stories/${story.id}`, {
+          title: story.title,
+          content: story.content,
+          photos: story.photos
+        });
+        toast.success('Story updated!');
       } else {
         // Create new story
-        const res = await authAxios.post('/stories', storyData);
-        if (isDraft) {
-          toast.success('Draft saved!');
-        } else {
-          toast.success('Story published!');
-        }
-        setStory({ ...story, id: res.data.id });
+        await authAxios.post('/stories', {
+          title: story.title,
+          content: story.content,
+          photos: story.photos
+        });
+        toast.success('Story published!');
       }
-      
-      if (!isDraft) {
-        onSuccess();
-        onClose();
-        // Reset form only if publishing
-        setStory({ id: null, title: '', content: '', photos: [] });
-        if (editorRef.current) {
-          editorRef.current.innerHTML = '';
-        }
-      }
+      onSuccess();
+      onClose();
+      setStory({ id: null, title: '', content: '', photos: [] });
     } catch (error) {
       toast.error('Failed to save story');
     } finally {
@@ -217,98 +103,19 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
               value={story.title}
               onChange={(e) => setStory({ ...story, title: e.target.value })}
               className="border-amber-200 focus:border-amber-500 text-lg"
-              tabIndex={1}
             />
           </div>
 
           <div>
             <Label>Your Story</Label>
-            <div className="bg-white rounded-lg border-2 border-amber-200 overflow-hidden" data-testid="rich-text-editor">
-              {/* Toolbar */}
-              <div className="bg-amber-50 p-2 border-b-2 border-amber-200 flex flex-wrap gap-1">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => execCommand('bold')}
-                  className={`hover:bg-amber-200 ${toolbarState.bold ? 'bg-amber-300 text-amber-900' : ''}`}
-                  data-testid="bold-btn"
-                  tabIndex={-1}
-                >
-                  <Bold className="w-4 h-4" />
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => execCommand('italic')}
-                  className={`hover:bg-amber-200 ${toolbarState.italic ? 'bg-amber-300 text-amber-900' : ''}`}
-                  data-testid="italic-btn"
-                  tabIndex={-1}
-                >
-                  <Italic className="w-4 h-4" />
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => execCommand('underline')}
-                  className={`hover:bg-amber-200 ${toolbarState.underline ? 'bg-amber-300 text-amber-900' : ''}`}
-                  data-testid="underline-btn"
-                  tabIndex={-1}
-                >
-                  <Underline className="w-4 h-4" />
-                </Button>
-                <Separator orientation="vertical" className="h-8" />
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => execCommand('formatBlock', '<h2>')}
-                  className="hover:bg-amber-200"
-                  data-testid="heading1-btn"
-                  tabIndex={-1}
-                >
-                  <Heading1 className="w-4 h-4" />
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => execCommand('formatBlock', '<h3>')}
-                  className="hover:bg-amber-200"
-                  data-testid="heading2-btn"
-                  tabIndex={-1}
-                >
-                  <Heading2 className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              {/* Editor */}
-              <div
-                ref={editorRef}
-                contentEditable={true}
-                onInput={handleContentChange}
-                onMouseUp={handleSelectionChange}
-                onKeyUp={handleSelectionChange}
-                onPaste={(e) => {
-                  // Handle paste to maintain formatting
-                  setTimeout(() => handleContentChange(), 10);
-                }}
-                data-testid="content-editor"
-                tabIndex={2}
-                className="min-h-[400px] p-6 focus:outline-none bg-white border-0"
-                style={{ 
-                  direction: 'ltr',
-                  textAlign: 'left',
-                  outline: 'none',
-                  fontFamily: 'Merriweather, Georgia, serif',
-                  fontSize: '16px',
-                  lineHeight: '1.6'
-                }}
-                suppressContentEditableWarning={true}
-              />
-            </div>
+            <Textarea
+              data-testid="story-content-input"
+              placeholder="Write your story here..."
+              value={story.content}
+              onChange={(e) => setStory({ ...story, content: e.target.value })}
+              rows={15}
+              className="border-amber-200 focus:border-amber-500 resize-none"
+            />
           </div>
 
           <div>
@@ -358,22 +165,13 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
 
           <div className="flex gap-3 pt-4">
             <Button
-              onClick={() => handleSave(false)}
+              onClick={handleSave}
               data-testid="save-story-btn"
               className="flex-1 bg-amber-700 hover:bg-amber-800 text-white font-semibold py-6 rounded-xl"
               disabled={saving}
             >
               <Save className="w-4 h-4 mr-2" />
               {saving ? 'Saving...' : story.id ? 'Update Story' : 'Publish Story'}
-            </Button>
-            <Button
-              onClick={() => handleSave(true)}
-              variant="outline"
-              className="px-8"
-              disabled={saving}
-              data-testid="save-draft-btn"
-            >
-              Save Draft
             </Button>
             <Button
               onClick={onClose}
