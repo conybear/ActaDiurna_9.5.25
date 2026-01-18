@@ -331,7 +331,7 @@ async def send_friend_request(request_data: FriendRequestCreate, current_user: d
             <h2>You've been invited to Acta Diurna!</h2>
             <p>{current_user['username']} wants to connect with you on Acta Diurna, a story-sharing platform.</p>
             <p>Join now to start sharing your stories and connect with friends!</p>
-            <p><a href="https://ancient-posts.preview.emergentagent.com">Sign up here</a></p>
+            <p><a href="https://diurnashare.preview.emergentagent.com">Sign up here</a></p>
             """
         )
         

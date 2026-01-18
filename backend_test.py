@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class ActaDiurnaAPITester:
-    def __init__(self, base_url="https://ancient-posts.preview.emergentagent.com"):
+    def __init__(self, base_url="https://diurnashare.preview.emergentagent.com"):
         self.base_url = base_url
         self.user1_token = None
         self.user2_token = None
