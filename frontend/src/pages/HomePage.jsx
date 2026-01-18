@@ -29,6 +29,7 @@ const HomePage = ({ user, setUser }) => {
   const [friendRequests, setFriendRequests] = useState([]);
   const [friendEmail, setFriendEmail] = useState('');
   const [showFlipbook, setShowFlipbook] = useState(false);
+  const [showMyFlipbook, setShowMyFlipbook] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [editingStory, setEditingStory] = useState(null);
   const [deletingStory, setDeletingStory] = useState(null);
