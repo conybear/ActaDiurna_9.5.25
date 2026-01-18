@@ -15,17 +15,24 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   const [saving, setSaving] = useState(false);
   const editorRef = useRef(null);
 
+  // Load initial content when modal opens or initialStory changes
   useEffect(() => {
-    if (initialStory) {
-      setStory({ ...initialStory });
-      // Set the content in the editor
-      if (editorRef.current) {
-        editorRef.current.innerHTML = initialStory.content || '';
-      }
-    } else {
-      setStory({ id: null, title: '', content: '', photos: [] });
-      if (editorRef.current) {
-        editorRef.current.innerHTML = '';
+    if (open) {
+      if (initialStory) {
+        setStory({ ...initialStory });
+        // Use setTimeout to ensure the DOM is ready
+        setTimeout(() => {
+          if (editorRef.current) {
+            editorRef.current.innerHTML = initialStory.content || '';
+          }
+        }, 50);
+      } else {
+        setStory({ id: null, title: '', content: '', photos: [] });
+        setTimeout(() => {
+          if (editorRef.current) {
+            editorRef.current.innerHTML = '';
+          }
+        }, 50);
       }
     }
   }, [initialStory, open]);
