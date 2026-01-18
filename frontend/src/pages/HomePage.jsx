@@ -226,7 +226,7 @@ const HomePage = ({ user, setUser }) => {
         </div>
 
         {/* Quick Actions */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex gap-3 mb-6 flex-wrap">
           <Button
             onClick={() => {
               setEditingStory(null);
@@ -244,7 +244,15 @@ const HomePage = ({ user, setUser }) => {
             className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-6 px-8 rounded-xl shadow-lg"
           >
             <Scroll className="w-5 h-5 mr-2" />
-            Open Flipbook
+            Friends' Flipbook
+          </Button>
+          <Button
+            onClick={() => setShowMyFlipbook(true)}
+            data-testid="open-my-flipbook-btn"
+            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold py-6 px-8 rounded-xl shadow-lg"
+          >
+            <BookOpen className="w-5 h-5 mr-2" />
+            My Flipbook
           </Button>
         </div>
 
