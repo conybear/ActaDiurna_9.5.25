@@ -129,6 +129,27 @@ body {
   text-decoration: underline;
 }
 
+/* List styling for contentEditable and prose */
+[data-testid="story-content-input"] ul,
+.prose ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5rem 0 !important;
+}
+
+[data-testid="story-content-input"] ol,
+.prose ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5rem 0 !important;
+}
+
+[data-testid="story-content-input"] li,
+.prose li {
+  margin: 0.25rem 0 !important;
+  display: list-item !important;
+}
+
 [data-testid="content-editor"] strong {
   font-weight: bold !important;
 }
