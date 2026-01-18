@@ -3,10 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { authAxios } from '@/App';
 import { toast } from 'sonner';
-import { Upload, X, Save, Bold, Italic, Underline } from 'lucide-react';
+import { Upload, X, Save, Bold, Italic, Underline, List, ListOrdered } from 'lucide-react';
 
 const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => {
   const [story, setStory] = useState(
@@ -14,127 +13,39 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   );
   const [uploadingImage, setUploadingImage] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [activeFormats, setActiveFormats] = useState({
-    bold: false,
-    italic: false,
-    underline: false
-  });
-  const textareaRef = useRef(null);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     if (initialStory) {
-      // Convert HTML back to markdown for editing
-      const markdownContent = htmlToMarkdown(initialStory.content);
-      setStory({ ...initialStory, content: markdownContent });
-    }
-  }, [initialStory]);
-
-  // Check which formats are active at cursor position
-  const updateActiveFormats = () => {
-    if (!textareaRef.current) return;
-    
-    const textarea = textareaRef.current;
-    const cursorPos = textarea.selectionStart;
-    const text = textarea.value;
-    
-    // Check if cursor is inside formatting
-    const beforeCursor = text.substring(0, cursorPos);
-    const afterCursor = text.substring(cursorPos);
-    
-    const formats = {
-      bold: false,
-      italic: false,
-      underline: false
-    };
-    
-    // Check for bold (**text**)
-    const boldOpenBefore = (beforeCursor.match(/\*\*/g) || []).length;
-    const boldOpenAfter = (afterCursor.match(/\*\*/g) || []).length;
-    formats.bold = boldOpenBefore % 2 === 1;
-    
-    // Check for italic (*text*) - but not bold
-    const italicBefore = beforeCursor.replace(/\*\*/g, '');
-    const italicAfter = afterCursor.replace(/\*\*/g, '');
-    const italicOpenBefore = (italicBefore.match(/\*/g) || []).length;
-    formats.italic = italicOpenBefore % 2 === 1;
-    
-    // Check for underline (__text__)
-    const underlineOpenBefore = (beforeCursor.match(/__/g) || []).length;
-    formats.underline = underlineOpenBefore % 2 === 1;
-    
-    setActiveFormats(formats);
-  };
-
-  // Handle cursor/selection changes
-  const handleCursorChange = () => {
-    updateActiveFormats();
-  };
-
-  // Convert HTML to markdown for editing
-  const htmlToMarkdown = (html) => {
-    if (!html) return '';
-    return html
-      .replace(/<strong>(.*?)<\/strong>/g, '**$1**')
-      .replace(/<em>(.*?)<\/em>/g, '*$1*')
-      .replace(/<u>(.*?)<\/u>/g, '__$1__');
-  };
-
-  // Convert markdown to HTML for saving
-  const markdownToHtml = (markdown) => {
-    if (!markdown) return '';
-    return markdown
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/__(.*?)__/g, '<u>$1</u>');
-  };
-
-  const insertFormatting = (formatType) => {
-    if (!textareaRef.current) return;
-    
-    const textarea = textareaRef.current;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = textarea.value.substring(start, end);
-    
-    let formatChars = '';
-    switch (formatType) {
-      case 'bold':
-        formatChars = '**';
-        break;
-      case 'italic':
-        formatChars = '*';
-        break;
-      case 'underline':
-        formatChars = '__';
-        break;
-      default:
-        return;
-    }
-    
-    let newText;
-    if (selectedText) {
-      // Wrap selected text
-      newText = textarea.value.substring(0, start) + 
-                formatChars + selectedText + formatChars + 
-                textarea.value.substring(end);
-    } else {
-      // Insert formatting markers at cursor
-      newText = textarea.value.substring(0, start) + 
-                formatChars + formatChars + 
-                textarea.value.substring(end);
-    }
-    
-    setStory({ ...story, content: newText });
-    
-    // Reset cursor position
-    setTimeout(() => {
-      textarea.focus();
-      if (selectedText) {
-        textarea.setSelectionRange(start + formatChars.length, end + formatChars.length);
-      } else {
-        textarea.setSelectionRange(start + formatChars.length, start + formatChars.length);
+      setStory({ ...initialStory });
+      // Set the content in the editor
+      if (editorRef.current) {
+        editorRef.current.innerHTML = initialStory.content || '';
       }
-    }, 0);
+    } else {
+      setStory({ id: null, title: '', content: '', photos: [] });
+      if (editorRef.current) {
+        editorRef.current.innerHTML = '';
+      }
+    }
+  }, [initialStory, open]);
+
+  // Execute formatting command
+  const formatText = (command, value = null) => {
+    document.execCommand(command, false, value);
+    editorRef.current?.focus();
+  };
+
+  // Check if a format is currently active
+  const isFormatActive = (command) => {
+    return document.queryCommandState(command);
+  };
+
+  // Handle content changes
+  const handleContentChange = () => {
+    if (editorRef.current) {
+      setStory({ ...story, content: editorRef.current.innerHTML });
+    }
   };
 
   const handleImageUpload = async (e) => {
@@ -166,21 +77,20 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
   };
 
   const handleSave = async () => {
-    if (!story.title.trim() || !story.content.trim()) {
+    if (!story.title.trim() || !editorRef.current?.textContent.trim()) {
       toast.error('Please fill in title and content');
       return;
     }
 
     setSaving(true);
     try {
-      // Convert markdown to HTML before saving
-      const htmlContent = markdownToHtml(story.content);
+      const content = editorRef.current.innerHTML;
       
       if (story.id) {
         // Update existing story
         await authAxios.put(`/stories/${story.id}`, {
           title: story.title,
-          content: htmlContent,
+          content: content,
           photos: story.photos
         });
         toast.success('Story updated!');
@@ -188,7 +98,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
         // Create new story
         await authAxios.post('/stories', {
           title: story.title,
-          content: htmlContent,
+          content: content,
           photos: story.photos
         });
         toast.success('Story published!');
@@ -196,6 +106,9 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
       onSuccess();
       onClose();
       setStory({ id: null, title: '', content: '', photos: [] });
+      if (editorRef.current) {
+        editorRef.current.innerHTML = '';
+      }
     } catch (error) {
       toast.error('Failed to save story');
     } finally {
@@ -205,7 +118,7 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto" data-testid="story-editor-modal">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" data-testid="story-editor-modal">
         <DialogHeader>
           <DialogTitle className="text-2xl text-amber-900">
             {story.id ? 'Edit Story' : 'Write Your Story'}
@@ -229,15 +142,18 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
             <Label>Your Story</Label>
             
             {/* Formatting Toolbar */}
-            <div className="mb-2 p-2 bg-amber-50 border border-amber-200 rounded-t-lg flex gap-1">
+            <div className="mb-2 p-2 bg-amber-50 border border-amber-200 rounded-t-lg flex gap-1 flex-wrap">
               <Button
                 type="button"
                 size="sm"
                 variant="ghost"
-                onClick={() => insertFormatting('bold')}
-                className={`hover:bg-amber-200 ${activeFormats.bold ? 'bg-amber-300 text-amber-900 shadow-sm' : ''}`}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  formatText('bold');
+                }}
+                className="hover:bg-amber-200"
                 data-testid="bold-btn"
-                title="Bold (**text**)"
+                title="Bold (Ctrl+B)"
               >
                 <Bold className="w-4 h-4" />
               </Button>
@@ -245,10 +161,13 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                 type="button"
                 size="sm"
                 variant="ghost"
-                onClick={() => insertFormatting('italic')}
-                className={`hover:bg-amber-200 ${activeFormats.italic ? 'bg-amber-300 text-amber-900 shadow-sm' : ''}`}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  formatText('italic');
+                }}
+                className="hover:bg-amber-200"
                 data-testid="italic-btn"
-                title="Italic (*text*)"
+                title="Italic (Ctrl+I)"
               >
                 <Italic className="w-4 h-4" />
               </Button>
@@ -256,43 +175,66 @@ const StoryEditorModal = ({ open, onClose, onSuccess, initialStory = null }) => 
                 type="button"
                 size="sm"
                 variant="ghost"
-                onClick={() => insertFormatting('underline')}
-                className={`hover:bg-amber-200 ${activeFormats.underline ? 'bg-amber-300 text-amber-900 shadow-sm' : ''}`}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  formatText('underline');
+                }}
+                className="hover:bg-amber-200"
                 data-testid="underline-btn"
-                title="Underline (__text__)"
+                title="Underline (Ctrl+U)"
               >
                 <Underline className="w-4 h-4" />
               </Button>
+              <div className="w-px bg-amber-300 mx-1"></div>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  formatText('insertUnorderedList');
+                }}
+                className="hover:bg-amber-200"
+                data-testid="bullet-list-btn"
+                title="Bullet List"
+              >
+                <List className="w-4 h-4" />
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  formatText('insertOrderedList');
+                }}
+                className="hover:bg-amber-200"
+                data-testid="numbered-list-btn"
+                title="Numbered List"
+              >
+                <ListOrdered className="w-4 h-4" />
+              </Button>
               <span className="text-xs text-amber-700 ml-2 self-center">
-                Use **bold**, *italic*, __underline__ - formatting shows when published
+                Select text and click formatting buttons
               </span>
             </div>
             
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm text-gray-600 mb-1 block">Write (with markdown):</Label>
-                <Textarea
-                  ref={textareaRef}
-                  data-testid="story-content-input"
-                  placeholder="Write your story here... Use **bold**, *italic*, __underline__ for formatting"
-                  value={story.content}
-                  onChange={(e) => setStory({ ...story, content: e.target.value })}
-                  onSelect={handleCursorChange}
-                  onKeyUp={handleCursorChange}
-                  onMouseUp={handleCursorChange}
-                  rows={15}
-                  className="border-amber-200 focus:border-amber-500 resize-none font-mono text-sm"
-                />
-              </div>
-              
-              <div>
-                <Label className="text-sm text-gray-600 mb-1 block">Preview (how it will look):</Label>
-                <div 
-                  className="min-h-[300px] p-4 border border-gray-300 rounded-lg bg-gray-50 overflow-y-auto prose prose-amber max-w-none"
-                  dangerouslySetInnerHTML={{ __html: markdownToHtml(story.content) || '<p class="text-gray-400 italic">Your formatted text will appear here...</p>' }}
-                />
-              </div>
-            </div>
+            {/* Rich Text Editor */}
+            <div
+              ref={editorRef}
+              contentEditable
+              data-testid="story-content-input"
+              onInput={handleContentChange}
+              className="min-h-[400px] p-4 border border-amber-200 rounded-b-lg bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent prose prose-amber max-w-none overflow-y-auto"
+              style={{
+                fontSize: '16px',
+                lineHeight: '1.6'
+              }}
+              suppressContentEditableWarning
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Tip: You can also use keyboard shortcuts - Ctrl+B (bold), Ctrl+I (italic), Ctrl+U (underline)
+            </p>
           </div>
 
           <div>
