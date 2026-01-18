@@ -400,6 +400,16 @@ const HomePage = ({ user, setUser }) => {
         open={showFlipbook}
         onClose={() => setShowFlipbook(false)}
         stories={stories}
+        title="Friends' Flipbook"
+        isMyStories={false}
+      />
+
+      <FlipbookModal
+        open={showMyFlipbook}
+        onClose={() => setShowMyFlipbook(false)}
+        stories={myStories}
+        title="My Stories Flipbook"
+        isMyStories={true}
       />
 
       <StoryEditorModal
