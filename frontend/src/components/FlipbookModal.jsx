@@ -51,7 +51,7 @@ const FlipbookModal = ({ open, onClose, stories, title = "Story Flipbook", isMyS
           <div className="space-y-4">
             {/* Page Content */}
             <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-8 min-h-[400px] max-h-[60vh] overflow-y-auto border-2 border-amber-200 shadow-inner">
-              <div className="mb-6">
+              <div className="mb-6 text-center">
                 <h2 className="text-3xl font-bold text-amber-900 mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                   {currentStory.title}
                 </h2>
