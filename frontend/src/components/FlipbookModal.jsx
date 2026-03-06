@@ -62,15 +62,17 @@ const FlipbookModal = ({ open, onClose, stories, title = "Story Flipbook", isMyS
 
               {/* Photos displayed before content */}
               {currentStory.photos && currentStory.photos.length > 0 && (
-                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {currentStory.photos.map((photo, idx) => (
-                    <img
-                      key={idx}
-                      src={photo}
-                      alt={`Story ${idx + 1}`}
-                      className="w-full h-auto max-h-80 object-contain rounded-lg border-2 border-amber-300 shadow-md bg-amber-50"
-                    />
-                  ))}
+                <div className="mb-6 flex justify-center">
+                  <div className="grid grid-cols-1 gap-4 max-w-lg">
+                    {currentStory.photos.map((photo, idx) => (
+                      <img
+                        key={idx}
+                        src={photo}
+                        alt={`Story ${idx + 1}`}
+                        className="w-full h-auto max-h-80 object-contain rounded-lg border-2 border-amber-300 shadow-md bg-amber-50"
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
 
