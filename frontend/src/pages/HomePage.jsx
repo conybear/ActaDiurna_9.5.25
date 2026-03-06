@@ -174,22 +174,22 @@ const HomePage = ({ user, setUser }) => {
         By {story.username} • {new Date(story.created_at).toLocaleDateString()}
       </p>
       <Separator className="mb-3" />
-      <div
-        className="text-gray-800 leading-relaxed mb-4 prose prose-amber max-w-none"
-        dangerouslySetInnerHTML={{ __html: story.content }}
-      />
-      {story.photos.length > 0 && (
-        <div className="flex gap-3 flex-wrap">
+      {story.photos && story.photos.length > 0 && (
+        <div className="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {story.photos.map((photo, idx) => (
             <img
               key={idx}
               src={photo}
               alt={`Story ${idx + 1}`}
-              className="w-24 h-24 object-cover rounded-lg border-2 border-amber-300"
+              className="w-full h-auto max-h-64 object-contain rounded-lg border-2 border-amber-300 bg-amber-50"
             />
           ))}
         </div>
       )}
+      <div
+        className="text-gray-800 leading-relaxed prose prose-amber max-w-none"
+        dangerouslySetInnerHTML={{ __html: story.content }}
+      />
     </div>
   );
 
