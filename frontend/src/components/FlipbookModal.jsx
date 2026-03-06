@@ -60,24 +60,25 @@ const FlipbookModal = ({ open, onClose, stories, title = "Story Flipbook", isMyS
                 </p>
               </div>
 
-              {/* Render HTML content properly */}
-              <div 
-                className="prose prose-amber max-w-none text-gray-800 leading-relaxed text-lg"
-                dangerouslySetInnerHTML={{ __html: currentStory.content }}
-              />
-
+              {/* Photos displayed before content */}
               {currentStory.photos && currentStory.photos.length > 0 && (
-                <div className="mt-6 grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                   {currentStory.photos.map((photo, idx) => (
                     <img
                       key={idx}
                       src={photo}
                       alt={`Story ${idx + 1}`}
-                      className="w-full h-40 object-cover rounded-lg border-2 border-amber-300 shadow-md"
+                      className="w-full h-auto max-h-80 object-contain rounded-lg border-2 border-amber-300 shadow-md bg-amber-50"
                     />
                   ))}
                 </div>
               )}
+
+              {/* Render HTML content properly */}
+              <div 
+                className="prose prose-amber max-w-none text-gray-800 leading-relaxed text-lg"
+                dangerouslySetInnerHTML={{ __html: currentStory.content }}
+              />
             </div>
 
             {/* Navigation */}
