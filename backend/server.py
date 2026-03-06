@@ -314,6 +314,7 @@ async def send_friend_request(request_data: FriendRequestCreate, current_user: d
     to_user = await db.users.find_one({"email": request_data.to_email})
     if not to_user:
         # User doesn't exist yet - attempt to send invitation email
+        app_url = os.environ.get('APP_URL', 'https://ancient-posts.emergent.host')
         email_sent = await send_email(
             request_data.to_email,
             f"{current_user['username']} invited you to join Acta Diurna",
@@ -321,7 +322,7 @@ async def send_friend_request(request_data: FriendRequestCreate, current_user: d
             <h2>You've been invited to Acta Diurna!</h2>
             <p>{current_user['username']} wants to connect with you on Acta Diurna, a story-sharing platform.</p>
             <p>Join now to start sharing your stories and connect with friends!</p>
-            <p><a href="https://diurnashare.preview.emergentagent.com">Sign up here</a></p>
+            <p><a href="{app_url}" style="background-color: #b45309; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; display: inline-block;">Sign up here</a></p>
             """
         )
         
