@@ -129,7 +129,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         raise HTTPException(status_code=401, detail="Invalid token")
 
 async def send_email(to_email: str, subject: str, content: str):
-    """Send email using Resend"""
+    """Send email using Resend from verified domain"""
     resend_key = os.environ.get('RESEND_API_KEY')
     if not resend_key:
         logging.warning("Resend API key not configured - email not sent")
@@ -138,26 +138,16 @@ async def send_email(to_email: str, subject: str, content: str):
     try:
         resend.api_key = resend_key
         
-        # Check if it's your verified email or use redirect for testing
-        if to_email == "joel.conybear@gmail.com":
-            # Direct send to verified email
-            params = {
-                "from": "Acta Diurna <onboarding@resend.dev>",
-                "to": [to_email],
-                "subject": subject,
-                "html": content,
-            }
-        else:
-            # For testing, redirect to verified account with original recipient info
-            params = {
-                "from": "Acta Diurna <onboarding@resend.dev>",
-                "to": ["joel.conybear@gmail.com"],
-                "subject": f"[FOR: {to_email}] {subject}",
-                "html": f"<p><strong>Original recipient:</strong> {to_email}</p><hr>{content}",
-            }
+        # Send from verified domain to any recipient
+        params = {
+            "from": "Acta Diurna <noreply@conybear.com>",
+            "to": [to_email],
+            "subject": subject,
+            "html": content,
+        }
         
         response = resend.Emails.send(params)
-        logging.info(f"Email sent successfully: {response}")
+        logging.info(f"Email sent successfully to {to_email}: {response}")
         return True
     except Exception as e:
         logging.error(f"Failed to send email to {to_email}: {e}")
