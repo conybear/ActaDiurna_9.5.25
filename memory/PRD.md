@@ -10,7 +10,7 @@ Build a full-stack story-sharing application called "Acta Diurna" where users ca
 - **Authentication**: JWT-based
 
 ## Third-Party Integrations
-- **Resend**: Email invitations to new users (free tier - emails redirected to verified address)
+- **Resend**: Email invitations from verified domain `conybear.com`
 - **Cloudinary**: Image storage for story photos
 
 ## Core Features (Completed)
@@ -27,18 +27,21 @@ Build a full-stack story-sharing application called "Acta Diurna" where users ca
 - [x] Edit existing stories (content loads correctly)
 - [x] Delete stories
 - [x] Photo uploads via Cloudinary
+- [x] Photos displayed below headline, before text content
+- [x] Full images shown (no cropping) using object-contain
 
 ### Friends System
 - [x] Send friend requests by email
 - [x] Accept/reject friend requests
 - [x] Friends list display
-- [x] Email invitations for non-registered users
+- [x] Real email invitations from `noreply@conybear.com`
 
 ### Flipbook Features
 - [x] Friends' Flipbook - view friends' published stories
 - [x] My Stories Flipbook - view your own stories in flipbook format
 - [x] Page navigation (Previous/Next)
 - [x] Proper HTML rendering with formatting preserved
+- [x] Centered layout (title, author, photos)
 
 ## Key Files
 - `/app/backend/server.py` - All backend API endpoints
@@ -60,30 +63,44 @@ Build a full-stack story-sharing application called "Acta Diurna" where users ca
 - GET `/api/friends`, `/api/friends/requests`
 - POST `/api/upload` (photos)
 
-## Known Limitations
-1. **Email**: Using Resend free tier - all invitation emails redirect to verified address (joel.conybear@gmail.com)
-2. **Separate Databases**: Preview and deployed environments use different MongoDB instances. Test data created in preview doesn't appear in production.
+## Environment Variables
+- `APP_URL` - Production app URL for email links (https://ancient-posts.emergent.host)
+- `RESEND_API_KEY` - Email service API key
+- `CLOUDINARY_*` - Image storage credentials
+- `MONGO_URL`, `DB_NAME` - Database connection
+- `JWT_SECRET` - Authentication secret
 
 ## Session Updates
+
+### March 6, 2026 (Latest)
+**Completed:**
+- Fixed image layout: photos now appear below headline, before text
+- Fixed image cropping: using `object-contain` to show full images
+- Centered Flipbook layout (title, author, photos)
+- Configured real email system with verified domain `conybear.com`
+- Emails now send from `noreply@conybear.com` to actual recipients
+- Added `APP_URL` environment variable for production email links
+- All users can now send real email invitations
 
 ### January 18, 2026
 **Completed:**
 - Replaced markdown-based editor with true WYSIWYG (contentEditable)
-- Fixed story content not loading when editing (added setTimeout for DOM readiness)
-- Added bullet and numbered list support with proper CSS styling
-- Added "My Stories Flipbook" feature with dedicated button
-- Fixed HTML rendering in Flipbook (using dangerouslySetInnerHTML)
-- Created test friend accounts and stories in preview environment:
-  - Marcus Aurelius (2 stories)
-  - Emily Writer (2 stories)
-  - Storyteller Sam (2 stories)
+- Fixed story content not loading when editing
+- Added bullet and numbered list support
+- Added "My Stories Flipbook" feature
+- Fixed HTML rendering in Flipbook
+- Created test friend accounts in preview environment
 
-**Note:** Test friends/stories only exist in preview database. Production requires real friends via email invitations.
+## Deployment Notes
+- Preview and deployed environments use separate MongoDB databases
+- Test data in preview doesn't appear in production
+- APP_URL must be set correctly for email invitation links to work
+- Bcrypt warning in logs is harmless (passlib compatibility)
 
 ## Backlog / Future Tasks
-- [ ] Upgrade to paid email API for production friend invitations
 - [ ] Draft saving functionality
 - [ ] Story categories/tags
 - [ ] Search functionality
 - [ ] User profile pages
 - [ ] Story comments/reactions
+- [ ] Image editing/cropping before upload
