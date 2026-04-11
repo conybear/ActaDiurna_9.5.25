@@ -35,6 +35,7 @@ Build a full-stack story-sharing application called "Acta Diurna" where users ca
 - [x] Accept/reject friend requests
 - [x] Friends list display
 - [x] Real email invitations from `noreply@conybear.com`
+- [x] Email links work correctly after deployment
 
 ### Flipbook Features
 - [x] Friends' Flipbook - view friends' published stories
@@ -70,37 +71,44 @@ Build a full-stack story-sharing application called "Acta Diurna" where users ca
 - `MONGO_URL`, `DB_NAME` - Database connection
 - `JWT_SECRET` - Authentication secret
 
+## Production URL
+- **Deployed App**: https://ancient-posts.emergent.host
+- **Email From**: noreply@conybear.com
+
 ## Session Updates
 
 ### March 6, 2026 (Latest)
 **Completed:**
-- Fixed image layout: photos now appear below headline, before text
-- Fixed image cropping: using `object-contain` to show full images
-- Centered Flipbook layout (title, author, photos)
-- Configured real email system with verified domain `conybear.com`
-- Emails now send from `noreply@conybear.com` to actual recipients
-- Added `APP_URL` environment variable for production email links
-- All users can now send real email invitations
+- ✅ Email system fully working with verified domain `conybear.com`
+- ✅ Users can send real invitations that go to actual recipients
+- ✅ Email links point to correct production URL
+- ✅ New users can sign up via email invitation link
+- ✅ Friend connections working between users
+- ✅ Friends can see each other's stories
+- ✅ Image layout: photos below headline, before text
+- ✅ Full images displayed (no cropping)
+- ✅ Centered Flipbook layout
 
-### January 18, 2026
-**Completed:**
-- Replaced markdown-based editor with true WYSIWYG (contentEditable)
-- Fixed story content not loading when editing
-- Added bullet and numbered list support
-- Added "My Stories Flipbook" feature
-- Fixed HTML rendering in Flipbook
-- Created test friend accounts in preview environment
+**Testing Verified:**
+- User sent invitation → Recipient received email → Clicked link → Created account → Connected as friends → Can see each other's stories ✅
 
-## Deployment Notes
-- Preview and deployed environments use separate MongoDB databases
-- Test data in preview doesn't appear in production
-- APP_URL must be set correctly for email invitation links to work
-- Bcrypt warning in logs is harmless (passlib compatibility)
+**Known Behavior:**
+- Friends list doesn't auto-refresh; users need to refresh page to see new friends
+- This is normal but could be improved in future
 
-## Backlog / Future Tasks
+### Potential Future Improvements (Discussed)
+- [ ] Auto-refresh friends list (every 30 seconds)
+- [ ] Store pending invitations so friend request auto-creates when new user signs up
+- [ ] Real-time updates without page refresh
 - [ ] Draft saving functionality
 - [ ] Story categories/tags
 - [ ] Search functionality
 - [ ] User profile pages
 - [ ] Story comments/reactions
 - [ ] Image editing/cropping before upload
+
+## Deployment Notes
+- Preview and deployed environments use separate MongoDB databases
+- APP_URL must be set correctly for email invitation links
+- Bcrypt warning in logs is harmless (passlib compatibility)
+- Always redeploy after .env changes

@@ -1,0 +1,132 @@
+<analysis>**original_problem_statement**: 
+The user is building a full-stack story-sharing application called Acta Diurna. 
+**PRODUCT REQUIREMENTS**:
+- **Backend**: Python (FastAPI).
+- **Database**: MongoDB.
+- **Authentication**: JWT-based user registration and login.
+- **Core Features**: Users can write, save, edit, and delete stories. A Friends system for sending/accepting requests. A main feed for friends' stories. A Flipbook to view stories (both Friends' and My Stories). 
+- **Rich Text Editing**: True WYSIWYG editor using  with bold, italic, underline, and list support. Drafts capability.
+- **Integrations**: Email invitations (Resend) via verified custom domain, File storage for photos (Cloudinary).
+
+**User's preferred language**: English (INSTRUCT next agent to respond in English only).
+
+**what currently exists?** 
+A functional full-stack app. Features include JWT auth, story CRUD, draft saving, a true WYSIWYG editor, a friends system, and a Flipbook UI to view stories. Recent updates include a My Flipbook feature for a user's own stories, improved image layouts (full uncropped images displayed below titles and centered), and a fully operational email invitation system sending real emails from the user's verified custom domain (). 
+
+**Last working item**:
+    - Last item agent was working: Discussing improvements to the friend invitation flow. The user successfully tested the email invite system but noticed that when an invited user signs up, the inviter has to manually send a friend request again. The agent proposed storing pending invitations to auto-create friend requests upon signup. The user logged off to think about next steps.
+    - Status: NONE (Waiting for user direction)
+    - Agent Testing Done: Y
+    - Which testing method agent to use?: testing_agent_v3_fork (for next upcoming features)
+    - User Testing Done: Y
+
+**All Pending/In progress Issue list**:
+  Issue 1: Friend request flow for invited users is disconnected (Priority P1)
+     - Attempted fixes: N/A
+     - Next debug checklist: Check  email invitation logic. When an email is sent to an unregistered user, store a  document (inviter_id, invited_email). Upon registration of that email, automatically trigger the friend request creation logic.
+     - Why fix this issue and what will be achieved with the fix?: Currently, users who invite a friend via email have to manually find and friend-request them again after they sign up. This fix creates a seamless onboarding experience.
+     - Status: NOT STARTED
+     - Is recurring issue? N
+     - Should Test frontend/backend/both after fix? backend
+     - Blocked on other issue: None
+
+**In progress Task List**:
+ None. 
+
+**Upcoming and Future Tasks**:
+  Upcoming Tasks:
+  - Task 1: (P1) Implement the streamlined invitation flow. Store pending email invitations in MongoDB so that when the invited user signs up, a friend request is automatically generated (or automatically accepted).
+  - Task 2: (P2) Implement auto-refresh or real-time UI updates for the friends list and feed, so users don't have to manually refresh to see new accepted friends.
+  - Task 3: (P2) Potential refactor of  into separate routers and models to improve maintainability as the file is growing extremely large.
+
+**Completed work in this session**:
+- Replaced markdown-based editor with a true WYSIWYG  editor ().
+- Fixed CSS styling for bullet/numbered lists in the new editor ().
+- Fixed a bug where editing a story didn't load content properly into the  div by using a  ().
+- Added My Flipbook feature to view personal stories ().
+- Fixed HTML rendering () in Flipbooks ().
+- Updated image layouts across the app: moved images below headlines/authors, centered them, and used  to prevent cropping (, ).
+- Configured Resend email system to send real emails to actual recipients from the user's verified domain () and updated environment variable references for dynamic APP URLs (, ).
+
+**Earlier issues found/mentioned but not fixed**:
+   - None. The issue of test friends not appearing in production was resolved by the user opting to test with actual live users instead.
+
+**Known issue recurrence from previous fork**:
+  - Issue recurrence in previous fork: WYSIWYG Editor Fragility.
+  - Recurrence count: 2
+  - Status: RESOLVED
+  - Note: The user explicitly requested to discard the stable Markdown editor and return to a  WYSIWYG editor. The agent successfully implemented it, but historically,  has caused bugs with RTL text and content loading. Next agent must be extremely careful if editing .
+
+**Code Architecture**:
+
+
+**Key Technical Concepts**:
+- Frontend: React (Hooks), Shadcn UI, Tailwind CSS.  API for rich text.
+- Backend: FastAPI, Pydantic, motor (async MongoDB), python-jose (JWT).
+- Architecture: Monolithic backend file () serving REST APIs to a React SPA.
+
+**key DB schema**:
+  - users: 
+  - stories: 
+  - friend_requests: 
+
+**changes in tech stack**:
+  - Verified custom domain mapped to Resend. Emails are now fully active and not mocked.
+
+**All files of reference**:
+  - : Contains API logic, email sending logic (Resend), and DB queries.
+  - : Contains the  WYSIWYG logic.
+  - : Dashboard containing Friends Flipbook" and "My Flipbook" triggers, plus feed mapping.
+  - `/app/frontend/src/components/FlipbookModal.jsx`: Renders the book-like UI for stories.
+  - `/app/frontend/src/App.css`: Contains CSS rules for `.prose` and list items inside the WYSIWYG editor.
+
+**Areas that need refactoring**: 
+  - `/app/backend/server.py` is nearly 500 lines long and handles everything (auth, stories, friends, emails, uploads). Needs to be broken down into routers (e.g., `/app/backend/routes/auth.py`, `/app/backend/routes/stories.py`) and models.
+
+**key api endpoints**:
+  - `/api/auth/register`, `/api/auth/login`
+  - `/api/stories`, `/api/stories/my`, `/api/stories/{story_id}` (GET, POST, PUT, DELETE)
+  - `/api/friends/request`, `/api/friends/respond`, `/api/friends`, `/api/friends/requests`
+  - `/api/photos/upload`
+  - `/api/invite` (POST - sends Resend emails)
+
+**Critical Info for New Agent**:
+- **Do NOT hallucinate or embed preview/production URLs**. The frontend uses `process.env.REACT_APP_BACKEND_URL` and backend email links use `os.environ.get(APP_URL)`. Keep relying on these env variables.
+- The user actively tests the application by deploying it. When you make a change, you test it locally via localhost:3000/8001, but the user must click "Deploy" to see it.
+- **WYSIWYG Alert**: `StoryEditorModal.jsx` uses `document.execCommand()` and a `contentEditable` div. To load existing content into it on edit, a `setTimeout` is currently used to ensure the div is mounted. Be cautious here.
+
+**documents and test reports created in this job**:
+  - `/app/memory/PRD.md`
+
+**Last 10 User Messages and any pending HUMAN messages**:
+1.  **User (Chat 227)**: "I am done for tonight. Let me think about the next steps, but this is good to know!" - Status: NONE (Waiting for user return)
+2.  **User (Chat 225)**: "I was able to send myself another invite (to a different email address). It worked - I was able to create a new account and connect. There is a few minute delay until I showed up as a friend. Is that normal?" - Status: RESOLVED (Agent explained the current manual friend request flow post-signup)
+3.  **User (Chat 223)**: "He was able to get into the site and see his stories and mine by typing in the url. So, thats a positive! I am unable to send him a new invitation because hes already a friend. So, now Ill try to invite somebody else now that we have re-deployed. - Status: RESOLVED
+4.  **User (Chat 216)**: I logged on - and I saw my friends stories. However, when he clicks on the "sign up here" button, he gets an error. So...I added him as a friend, but he doesnt seem to be able to get to the site! - Status: RESOLVED (Agent identified the email was sent prior to the env variable update deployment)
+5.  **User (Chat 212)**: Thank you. I will keep you posted! - Status: RESOLVED
+6.  **User (Chat 208)**: This is the URL when I go to the site:[DEPLOYMENT_URL] - Status: RESOLVED
+7.  **User (Chat 201)**: Shared deployment logs reporting a bcrypt warning. - Status: RESOLVED (Agent identified it as a harmless passlib warning, real issue was the email link).
+8.  **User (Chat 196)**: Hi - I sent a test invite out, and the recipient received the email. However, when he clicked on the sign-up button he got an error screen that says Preview Unavailable. - Status: RESOLVED (Agent fixed  logic).
+9.  **User (Chat 194)**: Awesome - thank you! - Status: RESOLVED
+10. **User (Chat 192)**: Will my friends be able to also send email invitations? Will they all go to me, or will they go to the designated email address that they use? - Status: RESOLVED (Agent confirmed direct emails work for everyone now).
+
+**Project Health Check:**
+  - Broken: None. 
+  - Mocked: None. Email system uses real Resend API.
+
+**3rd Party Integrations**:
+  - Resend (Email sending) - requires User API Key (Present in backend/.env)
+  - Cloudinary (Image uploads) - requires User API Key (Present in backend/.env)
+  - MongoDB (Database) - requires Connection String (Present in backend/.env)
+
+**Testing status**:
+  - Testing agent used after significant changes: NO (Manual/Scripted curl and Screenshots used heavily for UI verification).
+  - Troubleshoot agent used after agent stuck in loop: NO.
+  - Test files created: None.
+  - Known regressions: None currently active.
+
+**Credentials to test flow**:
+  - You can create new users via  to test backend flow.
+
+**What agent forgot to execute**:
+  - The agent suggested fixing the pending invite to friend request automated flow, but the user signed off before it was implemented. This should be pitched to the user in the next phase as the priority enhancement.</analysis>
